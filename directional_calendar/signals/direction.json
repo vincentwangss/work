@@ -1,0 +1,26 @@
+{
+  "timestamp": "2026-04-25T17:00:00",
+  "_comment": "此文件由你的择时策略写入，本系统每分钟读取一次。direction: 1=多 -1=空 0=中性",
+  "signals": {
+    "IF": {
+      "direction": 1,
+      "confidence": 0.85,
+      "reason": "沪深300多头趋势，均线金叉"
+    },
+    "IH": {
+      "direction": 1,
+      "confidence": 0.75,
+      "reason": "上证50多头"
+    },
+    "IC": {
+      "direction": 0,
+      "confidence": 0.5,
+      "reason": "中证500震荡，信号不明确"
+    },
+    "IM": {
+      "direction": -1,
+      "confidence": 0.65,
+      "reason": "中证1000弱势"
+    }
+  }
+}

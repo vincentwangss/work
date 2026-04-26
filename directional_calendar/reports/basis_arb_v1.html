@@ -1,0 +1,2369 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>纯基差回归套利回测报告</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body { font-family: -apple-system, "Segoe UI", sans-serif; margin: 16px; background:#f0f2f5; }
+.card { background:white; border-radius:10px; padding:24px; margin:16px 0; box-shadow:0 2px 8px rgba(0,0,0,.08); }
+h1 { color:#1a1a2e; text-align:center; } h2 { color:#16213e; } h3 { color:#1a1a2e; }
+table { width:100%; border-collapse:collapse; margin:8px 0; }
+.stats-table td { padding:8px 12px; border-bottom:1px solid #eee; font-size:14px; }
+.stats-table td:first-child { color:#666; width:45%; }
+.positive { color:#dc2626; font-weight:600; } .negative { color:#16a34a; font-weight:600; }
+.trade-table { font-size:12px; } .trade-table th { background:#f1f5f9; }
+.chart-container { height:300px; margin:16px 0; }
+.param-card { max-width:500px; }
+.summary-box {
+    display:flex; gap:16px; flex-wrap:wrap; margin:16px 0;
+}
+.summary-item {
+    background:linear-gradient(135deg, #2563eb, #7c3aed);
+    color:white; border-radius:10px; padding:20px; flex:1; min-width:150px;
+}
+.summary-item.neg { background:linear-gradient(135deg, #dc2626, #991b1b); }
+.summary-num { font-size:28px; font-weight:700; }
+.summary-label { font-size:13px; opacity:0.9; }
+</style>
+</head>
+<body>
+
+<div class="card">
+<h1>🎯 纯基差回归套利回测报告</h1>
+<p style="text-align:center;color:#666;">
+生成时间: 2026-04-26 10:28:58 | 
+策略: 无方向判断 · 完全对冲 · 只交易基差偏离→回归
+</p>
+</div>
+
+<div class="card summary-box">
+<div class="summary-item ">
+<div class="summary-num">¥+864,858</div>
+<div class="summary-label">总盈亏 (4品种)</div>
+</div>
+<div class="summary-item">
+<div class="summary-num">1106</div>
+<div class="summary-label">总交易次数</div>
+</div>
+<div class="summary-item ">
+<div class="summary-num">80.1%</div>
+<div class="summary-label">胜率</div>
+</div>
+</div>
+
+<div class="card param-card">
+<h3>⚙️ 回测参数</h3><table><tr><td>Z-Score 入场</td><td>±1.5</td></tr><tr><td>Z-Score 出场</td><td>±0.2</td></tr><tr><td>止盈（基差点数）</td><td>3.0 点</td></tr><tr><td>止损（基差点数）</td><td>8.0 点</td></tr><tr><td>时间止损</td><td>288 根K线 (24h)</td></tr><tr><td>Rolling 窗口</td><td>288 根 (24h)</td></tr><tr><td>手续费</td><td>0.23‱×4腿</td></tr><tr><td>滑点</td><td>0.2 tick×2腿</td></tr></table>
+</div>
+
+
+<div class="card">
+<h2>📈 IC - 387 笔交易</h2>
+<table class="stats-table">
+<tr><td>总交易次数</td><td class="">387</td></tr><tr><td>总收益率</td><td class="positive">+19.69%</td></tr><tr><td>年化收益率</td><td class="positive">+27.54%</td></tr><tr><td>总盈亏</td><td class="">+196,918元</td></tr><tr><td>最大回撤</td><td class="">-4.78%</td></tr><tr><td>Sharpe比率</td><td class="">0.28</td></tr><tr><td>胜率</td><td class="">74.9%</td></tr><tr><td>盈利次数</td><td class="">290</td></tr><tr><td>亏损次数</td><td class="">97</td></tr><tr><td>平均盈利</td><td class="">+1,846元</td></tr><tr><td>平均亏损</td><td class="">+3,489元</td></tr><tr><td>盈亏比</td><td class="">1.58</td></tr><tr><td>平均持仓时长</td><td class="">0.7小时(8根K线)</td></tr><tr><td>做空基次/均盈亏</td><td class="">185次 / +200元</td></tr><tr><td>做多基次/均盈亏</td><td class="">202次 / +792元</td></tr></table><div id="chart_IC" class="chart-container"></div><h3>交易明细</h3><table class="trade-table">
+<tr><th>入场时间</th><th>方向</th><th>入Z</th><th>入Spread</th><th>出Spread</th>
+<th>点PnL</th><th>元PnL</th><th>持K线</th><th>原因</th></tr>
+<tr>
+<td>03-20 14:45</td>
+<td>做多基差</td>
+<td>-3.36</td>
+<td>-251.6</td>
+<td>-268.0</td>
+<td class="negative">-16.4</td>
+<td class="negative">-3,502</td>
+<td>1</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>03-20 14:55</td>
+<td>做多基差</td>
+<td>-4.83</td>
+<td>-285.2</td>
+<td>+284.2</td>
+<td class="positive">+569.4</td>
+<td class="positive">+113,659</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-23 09:30</td>
+<td>做空基差</td>
+<td>+7.41</td>
+<td>+92.0</td>
+<td>+81.0</td>
+<td class="positive">+11.0</td>
+<td class="positive">+1,982</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-23 09:40</td>
+<td>做空基差</td>
+<td>+6.29</td>
+<td>+91.2</td>
+<td>+82.6</td>
+<td class="positive">+8.6</td>
+<td class="positive">+1,502</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-23 09:50</td>
+<td>做空基差</td>
+<td>+5.46</td>
+<td>+86.0</td>
+<td>+82.8</td>
+<td class="positive">+3.2</td>
+<td class="positive">+422</td>
+<td>6</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-23 10:25</td>
+<td>做空基差</td>
+<td>+4.09</td>
+<td>+87.4</td>
+<td>+99.4</td>
+<td class="negative">-12.0</td>
+<td class="negative">-2,617</td>
+<td>4</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>03-23 10:50</td>
+<td>做空基差</td>
+<td>+3.64</td>
+<td>+95.4</td>
+<td>+104.0</td>
+<td class="negative">-8.6</td>
+<td class="negative">-1,937</td>
+<td>6</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>03-23 11:25</td>
+<td>做空基差</td>
+<td>+3.12</td>
+<td>+98.2</td>
+<td>+110.8</td>
+<td class="negative">-12.6</td>
+<td class="negative">-2,736</td>
+<td>4</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>03-23 13:15</td>
+<td>做空基差</td>
+<td>+2.91</td>
+<td>+105.8</td>
+<td>+94.4</td>
+<td class="positive">+11.4</td>
+<td class="positive">+2,064</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-23 13:25</td>
+<td>做空基差</td>
+<td>+2.79</td>
+<td>+103.8</td>
+<td>+98.4</td>
+<td class="positive">+5.4</td>
+<td class="positive">+865</td>
+<td>4</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-23 13:50</td>
+<td>做空基差</td>
+<td>+2.50</td>
+<td>+96.8</td>
+<td>+105.2</td>
+<td class="negative">-8.4</td>
+<td class="negative">-1,895</td>
+<td>1</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>03-23 14:00</td>
+<td>做空基差</td>
+<td>+2.51</td>
+<td>+105.4</td>
+<td>+101.8</td>
+<td class="positive">+3.6</td>
+<td class="positive">+506</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-23 14:10</td>
+<td>做空基差</td>
+<td>+2.34</td>
+<td>+94.0</td>
+<td>+105.0</td>
+<td class="negative">-11.0</td>
+<td class="negative">-2,414</td>
+<td>1</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>03-23 14:20</td>
+<td>做空基差</td>
+<td>+2.36</td>
+<td>+103.6</td>
+<td>+125.8</td>
+<td class="negative">-22.2</td>
+<td class="negative">-4,654</td>
+<td>2</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>03-23 14:35</td>
+<td>做空基差</td>
+<td>+2.31</td>
+<td>+108.8</td>
+<td>+105.8</td>
+<td class="positive">+3.0</td>
+<td class="positive">+387</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-23 14:45</td>
+<td>做空基差</td>
+<td>+2.24</td>
+<td>+107.0</td>
+<td>+102.6</td>
+<td class="positive">+4.4</td>
+<td class="positive">+666</td>
+<td>2</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-24 09:25</td>
+<td>做空基差</td>
+<td>+2.53</td>
+<td>+150.4</td>
+<td>+103.8</td>
+<td class="positive">+46.6</td>
+<td class="positive">+9,105</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-24 09:35</td>
+<td>做空基差</td>
+<td>+2.09</td>
+<td>+105.6</td>
+<td>+102.6</td>
+<td class="positive">+3.0</td>
+<td class="positive">+386</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-24 09:45</td>
+<td>做空基差</td>
+<td>+2.00</td>
+<td>+100.2</td>
+<td>+96.6</td>
+<td class="positive">+3.6</td>
+<td class="positive">+506</td>
+<td>4</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-24 10:10</td>
+<td>做空基差</td>
+<td>+1.92</td>
+<td>+103.2</td>
+<td>+97.6</td>
+<td class="positive">+5.6</td>
+<td class="positive">+907</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-24 10:20</td>
+<td>做空基差</td>
+<td>+1.86</td>
+<td>+101.0</td>
+<td>+93.8</td>
+<td class="positive">+7.2</td>
+<td class="positive">+1,226</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-24 10:30</td>
+<td>做空基差</td>
+<td>+1.77</td>
+<td>+93.6</td>
+<td>+88.4</td>
+<td class="positive">+5.2</td>
+<td class="positive">+825</td>
+<td>21</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-01 09:25</td>
+<td>做多基差</td>
+<td>-16.02</td>
+<td>-216.8</td>
+<td>-168.2</td>
+<td class="positive">+48.6</td>
+<td class="positive">+9,502</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-01 09:35</td>
+<td>做多基差</td>
+<td>-8.77</td>
+<td>-162.2</td>
+<td>-170.6</td>
+<td class="negative">-8.4</td>
+<td class="negative">-1,898</td>
+<td>30</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>04-01 13:35</td>
+<td>做多基差</td>
+<td>-2.75</td>
+<td>-170.2</td>
+<td>-166.0</td>
+<td class="positive">+4.2</td>
+<td class="positive">+622</td>
+<td>2</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-01 13:50</td>
+<td>做多基差</td>
+<td>-2.57</td>
+<td>-165.8</td>
+<td>-162.0</td>
+<td class="positive">+3.8</td>
+<td class="positive">+543</td>
+<td>6</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-01 14:25</td>
+<td>做多基差</td>
+<td>-2.35</td>
+<td>-167.4</td>
+<td>-164.4</td>
+<td class="positive">+3.0</td>
+<td class="positive">+382</td>
+<td>3</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-01 14:45</td>
+<td>做多基差</td>
+<td>-2.22</td>
+<td>-166.0</td>
+<td>-114.0</td>
+<td class="positive">+52.0</td>
+<td class="positive">+10,182</td>
+<td>3</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-02 09:30</td>
+<td>做多基差</td>
+<td>-2.12</td>
+<td>-165.8</td>
+<td>-162.0</td>
+<td class="positive">+3.8</td>
+<td class="positive">+544</td>
+<td>27</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-02 13:15</td>
+<td>做多基差</td>
+<td>-1.58</td>
+<td>-162.6</td>
+<td>-172.8</td>
+<td class="negative">-10.2</td>
+<td class="negative">-2,254</td>
+<td>17</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>04-03 09:25</td>
+<td>做多基差</td>
+<td>-1.54</td>
+<td>-190.2</td>
+<td>-171.2</td>
+<td class="positive">+19.0</td>
+<td class="positive">+3,585</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-10 09:25</td>
+<td>做多基差</td>
+<td>-3.00</td>
+<td>-182.2</td>
+<td>-166.6</td>
+<td class="positive">+15.6</td>
+<td class="positive">+2,898</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-10 14:20</td>
+<td>做空基差</td>
+<td>+2.01</td>
+<td>-161.2</td>
+<td>-164.2</td>
+<td class="positive">+3.0</td>
+<td class="positive">+377</td>
+<td>3</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-10 14:40</td>
+<td>做空基差</td>
+<td>+1.52</td>
+<td>-162.8</td>
+<td>-169.2</td>
+<td class="positive">+6.4</td>
+<td class="positive">+1,058</td>
+<td>4</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-13 09:35</td>
+<td>做空基差</td>
+<td>+3.17</td>
+<td>-156.6</td>
+<td>-161.2</td>
+<td class="positive">+4.6</td>
+<td class="positive">+697</td>
+<td>3</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-13 09:55</td>
+<td>做空基差</td>
+<td>+1.60</td>
+<td>-162.0</td>
+<td>-165.0</td>
+<td class="positive">+3.0</td>
+<td class="positive">+377</td>
+<td>31</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-14 09:25</td>
+<td>做多基差</td>
+<td>-7.47</td>
+<td>-200.0</td>
+<td>-160.6</td>
+<td class="positive">+39.4</td>
+<td class="positive">+7,657</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-15 09:25</td>
+<td>做空基差</td>
+<td>+6.36</td>
+<td>-136.2</td>
+<td>-158.6</td>
+<td class="positive">+22.4</td>
+<td class="positive">+4,254</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-15 14:05</td>
+<td>做空基差</td>
+<td>+1.61</td>
+<td>-157.6</td>
+<td>-164.8</td>
+<td class="positive">+7.2</td>
+<td class="positive">+1,215</td>
+<td>11</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-16 09:30</td>
+<td>做空基差</td>
+<td>+2.59</td>
+<td>-152.6</td>
+<td>-156.8</td>
+<td class="positive">+4.2</td>
+<td class="positive">+615</td>
+<td>2</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-16 09:45</td>
+<td>做空基差</td>
+<td>+1.86</td>
+<td>-155.8</td>
+<td>-113.4</td>
+<td class="negative">-42.4</td>
+<td class="negative">-8,707</td>
+<td>96</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>04-20 09:40</td>
+<td>做空基差</td>
+<td>+2.20</td>
+<td>-146.2</td>
+<td>-151.2</td>
+<td class="positive">+5.0</td>
+<td class="positive">+771</td>
+<td>2</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-20 09:55</td>
+<td>做空基差</td>
+<td>+2.14</td>
+<td>-146.2</td>
+<td>-149.2</td>
+<td class="positive">+3.0</td>
+<td class="positive">+370</td>
+<td>6</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-20 10:30</td>
+<td>做空基差</td>
+<td>+1.54</td>
+<td>-149.2</td>
+<td>-154.2</td>
+<td class="positive">+5.0</td>
+<td class="positive">+771</td>
+<td>36</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-21 09:25</td>
+<td>做空基差</td>
+<td>+3.11</td>
+<td>-135.2</td>
+<td>-148.6</td>
+<td class="positive">+13.4</td>
+<td class="positive">+2,452</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-21 09:35</td>
+<td>做空基差</td>
+<td>+1.55</td>
+<td>-146.0</td>
+<td>-150.0</td>
+<td class="positive">+4.0</td>
+<td class="positive">+573</td>
+<td>2</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-21 10:20</td>
+<td>做空基差</td>
+<td>+1.51</td>
+<td>-145.6</td>
+<td>-148.8</td>
+<td class="positive">+3.2</td>
+<td class="positive">+412</td>
+<td>4</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-21 10:45</td>
+<td>做空基差</td>
+<td>+1.52</td>
+<td>-145.2</td>
+<td>-148.6</td>
+<td class="positive">+3.4</td>
+<td class="positive">+452</td>
+<td>3</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-22 09:25</td>
+<td>做多基差</td>
+<td>-1.76</td>
+<td>-166.0</td>
+<td>-150.8</td>
+<td class="positive">+15.2</td>
+<td class="positive">+2,812</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-23 09:25</td>
+<td>做多基差</td>
+<td>-3.77</td>
+<td>-172.4</td>
+<td>-150.6</td>
+<td class="positive">+21.8</td>
+<td class="positive">+4,129</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+
+</table></div>
+<script>
+new Chart(document.getElementById('chart_IC'), {
+    type: 'line',
+    data: {
+        labels: ["08-04 10:15", "08-05 10:25", "08-06 10:15", "08-07 10:10", "08-08 10:00", "08-11 10:05", "08-12 10:10", "08-13 10:30", "08-14 10:40", "08-15 10:50", "08-18 11:20", "08-19 13:10", "08-20 13:00", "08-21 11:25", "08-22 11:25", "08-25 11:30", "08-26 13:00", "08-27 13:00", "08-28 13:15", "08-29 13:55", "09-01 14:05", "09-02 14:00", "09-03 13:50", "09-04 14:50", "09-08 09:35", "09-09 09:40", "09-10 10:05", "09-11 10:10", "09-12 11:15", "09-15 11:30", "09-16 11:20", "09-17 11:10", "09-18 11:00", "09-19 14:20", "09-22 14:40", "09-24 10:20", "09-25 10:15", "09-26 10:05", "09-29 10:00", "09-30 10:10", "10-09 11:00", "10-10 11:15", "10-13 11:15", "10-14 11:10", "10-15 11:00", "10-16 10:50", "10-17 10:50", "10-20 11:05", "10-21 10:55", "10-22 10:55", "10-23 11:15", "10-24 11:30", "10-27 13:10", "10-28 13:10", "10-29 13:00", "10-30 13:00", "10-31 13:35", "11-03 14:05", "11-04 14:05", "11-05 14:20", "11-06 14:15", "11-07 14:25", "11-11 09:40", "11-12 10:00", "11-13 10:25", "11-14 10:30", "11-17 10:50", "11-18 10:55", "11-19 11:05", "11-20 11:20", "11-21 13:00", "11-24 13:30", "11-25 13:45", "11-26 13:40", "11-27 13:30", "11-28 13:20", "12-01 13:30", "12-02 13:55", "12-03 13:55", "12-04 13:55", "12-05 14:00", "12-08 14:10", "12-09 14:15", "12-10 14:30", "12-11 14:50", "12-12 14:55", "12-16 10:15", "12-17 10:35", "12-18 11:25", "12-22 09:45", "12-23 10:15", "12-24 10:15", "12-25 10:10", "12-26 10:00", "12-29 09:50", "12-30 09:55", "12-31 09:50", "01-05 10:10", "01-06 10:45", "01-07 10:40", "01-08 10:30", "01-09 10:20", "01-12 10:10", "01-13 10:35", "01-14 11:10", "01-15 13:15", "01-16 13:50", "01-19 13:55", "01-21 09:45", "01-22 10:05", "01-23 10:15", "01-26 13:20", "01-27 13:25", "01-28 13:40", "01-29 14:10", "01-30 14:15", "02-03 09:35", "02-04 10:35", "02-05 10:55", "02-06 10:45", "02-09 10:35", "02-10 10:30", "02-11 10:30", "02-12 10:30", "02-13 10:35", "02-24 10:45", "02-25 10:45", "02-26 10:45", "02-27 11:30", "03-02 13:35", "03-03 13:50", "03-04 14:20", "03-06 10:30", "03-09 11:10", "03-10 11:25", "03-11 11:20", "03-12 11:10", "03-13 11:00", "03-16 10:55", "03-17 10:45", "03-18 11:05", "03-19 13:30", "03-20 14:30", "03-24 13:55", "03-25 13:45", "03-26 13:35", "03-27 13:30", "03-30 13:20", "03-31 13:15", "04-01 13:20", "04-02 14:10", "04-03 14:15", "04-07 14:05", "04-08 13:55", "04-09 13:50", "04-10 13:50", "04-13 14:20", "04-14 14:25", "04-15 14:30", "04-16 14:40", "04-17 14:30", "04-20 14:50", "04-22 10:00", "04-23 10:00"],
+        datasets: [{
+            label: 'IC 权益曲线',
+            data: [1000000.0, 1000008.19, 999728.19, 1000935.1, 1000935.1, 1001541.88, 1003587.33, 1004916.83, 1002722.93, 999809.27, 996052.11, 993728.37, 993728.37, 993728.37, 995126.81, 1001481.42, 1001830.42, 1003623.76, 1005693.75, 1002624.35, 1005529.27, 1002921.79, 1002921.79, 1002265.77, 1002458.35, 1004052.98, 1000036.18, 997151.22, 995775.34, 1003224.51, 1003224.51, 1003224.51, 1003224.51, 1008582.68, 1012204.32, 1009742.08, 1009742.08, 1009742.08, 1009742.08, 1007888.42, 1007082.59, 1003694.58, 996163.43, 996163.43, 996163.43, 996163.43, 993315.11, 997584.11, 997584.11, 998536.39, 999918.89, 1001900.83, 1006070.54, 1003538.83, 1003538.83, 1003498.83, 1008326.21, 1010563.05, 1011151.42, 1017613.84, 1017573.84, 1019391.57, 1016602.11, 1018488.96, 1021578.83, 1019796.8, 1023085.05, 1025635.57, 1027698.46, 1032801.71, 1035791.76, 1032696.8, 1028526.52, 1031040.17, 1031040.17, 1031040.17, 1031393.22, 1033491.59, 1033484.83, 1034758.2, 1035391.7, 1041454.81, 1043315.28, 1046978.44, 1047270.89, 1047972.3, 1053078.92, 1054624.39, 1050246.19, 1012595.08, 1011908.26, 1013656.68, 1013656.68, 1013656.68, 1013656.68, 1015201.5, 1015201.5, 1057850.46, 1060979.87, 1061239.7, 1061239.7, 1061239.7, 1061239.7, 1056431.01, 1063554.1, 1068565.44, 1067975.69, 1068065.4, 1063391.81, 1065335.39, 1063106.11, 1060862.03, 1061951.77, 1065038.13, 1057043.61, 1063536.07, 1055178.42, 1050339.25, 1055850.02, 1055850.02, 1055850.02, 1055850.02, 1056738.08, 1060105.17, 1061471.72, 1073128.05, 1075374.29, 1079658.32, 1079235.68, 1075447.97, 1074384.97, 1067821.8, 1073121.16, 1044243.49, 1044517.42, 1044517.42, 1044517.42, 1044517.42, 1044517.42, 1044517.42, 1041359.05, 1031212.82, 1039172.65, 1152525.63, 1152525.63, 1152525.63, 1152525.63, 1152525.63, 1152525.63, 1160828.07, 1170924.4, 1173734.62, 1173734.62, 1173734.62, 1173734.62, 1176632.21, 1179141.19, 1186797.76, 1191211.93, 1192642.25, 1192242.25, 1184957.0, 1192788.87, 1196918.19],
+            borderColor: '#dc2626',
+            backgroundColor: '#dc262615',
+            fill: true,
+            tension: 0.1,
+            pointRadius: 0,
+        }]
+    },
+    options: { responsive: true, plugins: {legend:{display:false}} }
+});
+</script>
+
+<div class="card">
+<h2>📈 IF - 166 笔交易</h2>
+<table class="stats-table">
+<tr><td>总交易次数</td><td class="">166</td></tr><tr><td>总收益率</td><td class="positive">+16.16%</td></tr><tr><td>年化收益率</td><td class="positive">+22.51%</td></tr><tr><td>总盈亏</td><td class="">+161,594元</td></tr><tr><td>最大回撤</td><td class="">-2.64%</td></tr><tr><td>Sharpe比率</td><td class="">0.38</td></tr><tr><td>胜率</td><td class="">82.5%</td></tr><tr><td>盈利次数</td><td class="">137</td></tr><tr><td>亏损次数</td><td class="">29</td></tr><tr><td>平均盈利</td><td class="">+1,992元</td></tr><tr><td>平均亏损</td><td class="">+3,837元</td></tr><tr><td>盈亏比</td><td class="">2.45</td></tr><tr><td>平均持仓时长</td><td class="">2.1小时(25根K线)</td></tr><tr><td>做空基次/均盈亏</td><td class="">65次 / +838元</td></tr><tr><td>做多基次/均盈亏</td><td class="">101次 / +1060元</td></tr></table><div id="chart_IF" class="chart-container"></div><h3>交易明细</h3><table class="trade-table">
+<tr><th>入场时间</th><th>方向</th><th>入Z</th><th>入Spread</th><th>出Spread</th>
+<th>点PnL</th><th>元PnL</th><th>持K线</th><th>原因</th></tr>
+<tr>
+<td>01-26 09:35</td>
+<td>做空基差</td>
+<td>+4.29</td>
+<td>-14.4</td>
+<td>-17.8</td>
+<td class="positive">+3.4</td>
+<td class="positive">+770</td>
+<td>30</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>01-26 13:35</td>
+<td>做空基差</td>
+<td>+1.80</td>
+<td>-18.6</td>
+<td>-21.6</td>
+<td class="positive">+3.0</td>
+<td class="positive">+650</td>
+<td>28</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>01-28 09:25</td>
+<td>做空基差</td>
+<td>+2.06</td>
+<td>-10.0</td>
+<td>-19.8</td>
+<td class="positive">+9.8</td>
+<td class="positive">+2,690</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>01-30 09:30</td>
+<td>做空基差</td>
+<td>+1.63</td>
+<td>-9.4</td>
+<td>-13.8</td>
+<td class="positive">+4.4</td>
+<td class="positive">+1,069</td>
+<td>7</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>02-02 09:25</td>
+<td>做空基差</td>
+<td>+2.82</td>
+<td>-2.8</td>
+<td>-12.0</td>
+<td class="positive">+9.2</td>
+<td class="positive">+2,511</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>02-02 13:40</td>
+<td>做多基差</td>
+<td>-1.79</td>
+<td>-22.4</td>
+<td>-35.8</td>
+<td class="negative">-13.4</td>
+<td class="negative">-4,266</td>
+<td>13</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>02-02 14:50</td>
+<td>做多基差</td>
+<td>-4.87</td>
+<td>-37.8</td>
+<td>-15.0</td>
+<td class="positive">+22.8</td>
+<td class="positive">+6,593</td>
+<td>2</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>02-03 09:30</td>
+<td>做多基差</td>
+<td>-2.38</td>
+<td>-27.6</td>
+<td>-21.2</td>
+<td class="positive">+6.4</td>
+<td class="positive">+1,672</td>
+<td>2</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>02-03 09:50</td>
+<td>做多基差</td>
+<td>-1.59</td>
+<td>-24.2</td>
+<td>-20.0</td>
+<td class="positive">+4.2</td>
+<td class="positive">+1,012</td>
+<td>2</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>02-03 10:10</td>
+<td>做多基差</td>
+<td>-1.72</td>
+<td>-25.0</td>
+<td>-21.4</td>
+<td class="positive">+3.6</td>
+<td class="positive">+833</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>02-03 10:30</td>
+<td>做多基差</td>
+<td>-1.60</td>
+<td>-24.6</td>
+<td>-11.8</td>
+<td class="positive">+12.8</td>
+<td class="positive">+3,593</td>
+<td>137</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>02-09 09:25</td>
+<td>做多基差</td>
+<td>-1.54</td>
+<td>-32.8</td>
+<td>-27.2</td>
+<td class="positive">+5.6</td>
+<td class="positive">+1,431</td>
+<td>2</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>02-10 13:30</td>
+<td>做多基差</td>
+<td>-1.62</td>
+<td>-31.8</td>
+<td>-19.8</td>
+<td class="positive">+12.0</td>
+<td class="positive">+3,351</td>
+<td>116</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>02-13 11:15</td>
+<td>做多基差</td>
+<td>-1.78</td>
+<td>-35.8</td>
+<td>-53.2</td>
+<td class="negative">-17.4</td>
+<td class="negative">-5,468</td>
+<td>28</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>02-24 09:30</td>
+<td>做多基差</td>
+<td>-2.83</td>
+<td>-41.4</td>
+<td>-38.2</td>
+<td class="positive">+3.2</td>
+<td class="positive">+710</td>
+<td>65</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-02 10:30</td>
+<td>做多基差</td>
+<td>-1.60</td>
+<td>-44.8</td>
+<td>-53.0</td>
+<td class="negative">-8.2</td>
+<td class="negative">-2,708</td>
+<td>60</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>03-03 11:25</td>
+<td>做多基差</td>
+<td>-2.78</td>
+<td>-52.8</td>
+<td>-48.6</td>
+<td class="positive">+4.2</td>
+<td class="positive">+1,011</td>
+<td>7</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-03 13:35</td>
+<td>做多基差</td>
+<td>-1.84</td>
+<td>-49.8</td>
+<td>-45.0</td>
+<td class="positive">+4.8</td>
+<td class="positive">+1,192</td>
+<td>5</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-04 14:55</td>
+<td>做多基差</td>
+<td>-1.80</td>
+<td>-51.0</td>
+<td>-41.6</td>
+<td class="positive">+9.4</td>
+<td class="positive">+2,573</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-05 09:45</td>
+<td>做多基差</td>
+<td>-1.54</td>
+<td>-50.0</td>
+<td>-58.4</td>
+<td class="negative">-8.4</td>
+<td class="negative">-2,767</td>
+<td>26</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>03-05 13:25</td>
+<td>做多基差</td>
+<td>-2.66</td>
+<td>-58.8</td>
+<td>-99.0</td>
+<td class="negative">-40.2</td>
+<td class="negative">-12,306</td>
+<td>69</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>03-09 09:30</td>
+<td>做多基差</td>
+<td>-1.53</td>
+<td>-62.4</td>
+<td>-70.6</td>
+<td class="negative">-8.2</td>
+<td class="negative">-2,705</td>
+<td>27</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>03-09 13:15</td>
+<td>做多基差</td>
+<td>-1.96</td>
+<td>-69.4</td>
+<td>-64.0</td>
+<td class="positive">+5.4</td>
+<td class="positive">+1,374</td>
+<td>7</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-09 13:55</td>
+<td>做多基差</td>
+<td>-1.50</td>
+<td>-66.2</td>
+<td>-63.2</td>
+<td class="positive">+3.0</td>
+<td class="positive">+654</td>
+<td>2</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-09 14:10</td>
+<td>做多基差</td>
+<td>-1.59</td>
+<td>-67.2</td>
+<td>-63.8</td>
+<td class="positive">+3.4</td>
+<td class="positive">+774</td>
+<td>6</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-13 11:15</td>
+<td>做多基差</td>
+<td>-1.65</td>
+<td>-70.4</td>
+<td>-80.0</td>
+<td class="negative">-9.6</td>
+<td class="negative">-3,128</td>
+<td>77</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>03-17 09:50</td>
+<td>做多基差</td>
+<td>-1.76</td>
+<td>-73.2</td>
+<td>-70.0</td>
+<td class="positive">+3.2</td>
+<td class="positive">+711</td>
+<td>3</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-17 13:30</td>
+<td>做多基差</td>
+<td>-1.52</td>
+<td>-73.0</td>
+<td>-69.8</td>
+<td class="positive">+3.2</td>
+<td class="positive">+712</td>
+<td>11</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-18 11:00</td>
+<td>做多基差</td>
+<td>-1.55</td>
+<td>-73.8</td>
+<td>-70.6</td>
+<td class="positive">+3.2</td>
+<td class="positive">+714</td>
+<td>5</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-18 13:25</td>
+<td>做多基差</td>
+<td>-1.69</td>
+<td>-74.6</td>
+<td>-95.2</td>
+<td class="negative">-20.6</td>
+<td class="negative">-6,426</td>
+<td>19</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>03-19 09:30</td>
+<td>做多基差</td>
+<td>-1.66</td>
+<td>-76.0</td>
+<td>-84.2</td>
+<td class="negative">-8.2</td>
+<td class="negative">-2,706</td>
+<td>18</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>03-19 11:05</td>
+<td>做多基差</td>
+<td>-3.06</td>
+<td>-84.4</td>
+<td>-80.2</td>
+<td class="positive">+4.2</td>
+<td class="positive">+1,014</td>
+<td>30</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-20 13:15</td>
+<td>做多基差</td>
+<td>-2.12</td>
+<td>-85.2</td>
+<td>-80.6</td>
+<td class="positive">+4.6</td>
+<td class="positive">+1,134</td>
+<td>3</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-20 13:35</td>
+<td>做多基差</td>
+<td>-1.61</td>
+<td>-82.8</td>
+<td>-91.8</td>
+<td class="negative">-9.0</td>
+<td class="negative">-2,946</td>
+<td>12</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>03-20 14:40</td>
+<td>做多基差</td>
+<td>-4.02</td>
+<td>-99.0</td>
+<td>-108.2</td>
+<td class="negative">-9.2</td>
+<td class="negative">-3,005</td>
+<td>2</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>03-20 14:55</td>
+<td>做多基差</td>
+<td>-5.16</td>
+<td>-110.2</td>
+<td>+124.0</td>
+<td class="positive">+234.2</td>
+<td class="positive">+70,015</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-23 09:30</td>
+<td>做空基差</td>
+<td>+7.43</td>
+<td>+37.6</td>
+<td>+33.0</td>
+<td class="positive">+4.6</td>
+<td class="positive">+1,138</td>
+<td>14</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-23 10:45</td>
+<td>做空基差</td>
+<td>+3.62</td>
+<td>+38.2</td>
+<td>+32.4</td>
+<td class="positive">+5.8</td>
+<td class="positive">+1,499</td>
+<td>25</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-23 14:20</td>
+<td>做空基差</td>
+<td>+2.24</td>
+<td>+37.6</td>
+<td>+67.2</td>
+<td class="negative">-29.6</td>
+<td class="negative">-9,121</td>
+<td>8</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>03-24 09:30</td>
+<td>做空基差</td>
+<td>+1.99</td>
+<td>+37.4</td>
+<td>+34.0</td>
+<td class="positive">+3.4</td>
+<td class="positive">+780</td>
+<td>9</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-24 10:20</td>
+<td>做空基差</td>
+<td>+1.75</td>
+<td>+35.0</td>
+<td>+32.0</td>
+<td class="positive">+3.0</td>
+<td class="positive">+659</td>
+<td>29</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-31 13:35</td>
+<td>做空基差</td>
+<td>+1.55</td>
+<td>+41.0</td>
+<td>+36.2</td>
+<td class="positive">+4.8</td>
+<td class="positive">+1,198</td>
+<td>3</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-01 09:25</td>
+<td>做多基差</td>
+<td>-16.12</td>
+<td>-82.8</td>
+<td>-97.8</td>
+<td class="negative">-15.0</td>
+<td class="negative">-4,741</td>
+<td>99</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>04-13 09:25</td>
+<td>做空基差</td>
+<td>+3.63</td>
+<td>-76.2</td>
+<td>-81.2</td>
+<td class="positive">+5.0</td>
+<td class="positive">+1,256</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-14 09:25</td>
+<td>做多基差</td>
+<td>-3.47</td>
+<td>-89.2</td>
+<td>-81.0</td>
+<td class="positive">+8.2</td>
+<td class="positive">+2,214</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-15 09:25</td>
+<td>做多基差</td>
+<td>-4.33</td>
+<td>-90.8</td>
+<td>-81.2</td>
+<td class="positive">+9.6</td>
+<td class="positive">+2,632</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-15 09:35</td>
+<td>做空基差</td>
+<td>+1.90</td>
+<td>-80.0</td>
+<td>-89.8</td>
+<td class="positive">+9.8</td>
+<td class="positive">+2,693</td>
+<td>47</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-16 09:35</td>
+<td>做空基差</td>
+<td>+1.90</td>
+<td>-79.6</td>
+<td>-81.2</td>
+<td class="positive">+1.6</td>
+<td class="positive">+233</td>
+<td>95</td>
+<td>Z-Score回归</td>
+</tr>
+<tr>
+<td>04-20 11:00</td>
+<td>做空基差</td>
+<td>+2.11</td>
+<td>-76.8</td>
+<td>-79.4</td>
+<td class="positive">+2.6</td>
+<td class="positive">+531</td>
+<td>84</td>
+<td>Z-Score回归</td>
+</tr>
+<tr>
+<td>04-23 10:05</td>
+<td>做多基差</td>
+<td>-1.61</td>
+<td>-81.6</td>
+<td>-83.0</td>
+<td class="negative">-1.4</td>
+<td class="negative">-670</td>
+<td>41</td>
+<td>交割到期</td>
+</tr>
+
+</table></div>
+<script>
+new Chart(document.getElementById('chart_IF'), {
+    type: 'line',
+    data: {
+        labels: ["08-04 10:15", "08-05 10:35", "08-06 11:00", "08-07 11:05", "08-08 11:05", "08-11 11:05", "08-12 11:15", "08-13 11:15", "08-14 11:20", "08-15 11:15", "08-18 11:15", "08-19 11:10", "08-20 11:10", "08-21 11:00", "08-22 10:50", "08-25 10:50", "08-26 11:00", "08-27 10:55", "08-28 11:05", "08-29 11:10", "09-01 11:05", "09-02 11:05", "09-03 11:10", "09-04 11:05", "09-05 11:05", "09-08 11:00", "09-09 11:10", "09-10 11:05", "09-11 11:25", "09-12 13:00", "09-15 11:30", "09-16 11:25", "09-17 11:25", "09-18 13:05", "09-19 14:45", "09-23 09:50", "09-24 10:05", "09-25 09:55", "09-26 09:50", "09-29 09:45", "09-30 09:55", "10-09 10:00", "10-10 10:10", "10-13 10:05", "10-14 10:00", "10-15 09:55", "10-16 09:45", "10-17 09:45", "10-20 09:50", "10-21 09:45", "10-22 09:35", "10-23 09:30", "10-24 09:25", "10-24 14:55", "10-28 09:35", "10-29 09:45", "10-30 10:00", "10-31 10:00", "11-03 09:50", "11-04 09:50", "11-05 09:40", "11-06 09:30", "11-07 09:25", "11-07 14:55", "11-10 14:55", "11-12 09:25", "11-13 09:45", "11-14 09:45", "11-17 09:50", "11-18 09:50", "11-19 09:50", "11-20 09:45", "11-21 09:40", "11-24 09:35", "11-25 09:35", "11-26 09:50", "11-27 09:50", "11-28 10:00", "12-01 09:55", "12-02 09:45", "12-03 09:40", "12-04 09:35", "12-05 09:40", "12-08 09:35", "12-09 09:45", "12-10 09:50", "12-11 09:45", "12-12 09:40", "12-15 09:50", "12-16 09:40", "12-17 09:30", "12-18 09:50", "12-19 10:05", "12-22 10:10", "12-23 10:05", "12-24 09:55", "12-25 09:55", "12-26 09:50", "12-29 09:40", "12-30 09:40", "12-31 09:35", "01-05 09:45", "01-06 10:00", "01-07 09:55", "01-08 09:45", "01-09 09:40", "01-12 09:35", "01-13 09:35", "01-14 10:00", "01-15 10:30", "01-16 10:40", "01-19 10:40", "01-20 10:35", "01-21 10:40", "01-22 10:35", "01-23 10:30", "01-26 10:45", "01-27 10:50", "01-28 10:50", "01-29 10:40", "01-30 10:45", "02-02 10:50", "02-03 13:05", "02-04 11:30", "02-05 11:20", "02-06 11:15", "02-09 11:15", "02-10 11:10", "02-11 11:10", "02-12 11:05", "02-13 11:05", "02-24 11:10", "02-25 11:10", "02-26 11:00", "02-27 10:50", "03-02 10:45", "03-03 10:35", "03-04 10:55", "03-05 11:00", "03-06 11:00", "03-09 11:00", "03-10 11:25", "03-11 11:15", "03-12 11:05", "03-13 10:55", "03-16 10:50", "03-17 11:00", "03-18 11:10", "03-19 13:00", "03-20 11:30", "03-23 13:40", "03-24 14:00", "03-25 14:00", "03-26 13:55", "03-27 13:45", "03-30 13:40", "03-31 13:30", "04-01 13:35", "04-02 13:30", "04-03 13:30", "04-07 13:25", "04-08 13:20", "04-09 13:15", "04-10 13:05", "04-13 13:10", "04-14 13:15", "04-15 13:25", "04-16 13:30", "04-17 13:20", "04-20 13:25", "04-21 13:20", "04-22 13:15", "04-23 13:10"],
+        datasets: [{
+            label: 'IF 权益曲线',
+            data: [1000000.0, 1001766.01, 1002449.43, 1002216.88, 1002824.37, 1003124.37, 1004638.18, 1004818.18, 1005423.89, 1004643.89, 1001648.18, 1002011.72, 1004416.18, 1004416.18, 1004416.18, 1005434.24, 1011191.42, 1011668.46, 1013044.22, 1015501.35, 1015677.67, 1016513.95, 1018370.15, 1019448.3, 1020228.07, 1020228.07, 1022025.85, 1022443.74, 1020397.88, 1022608.86, 1021648.86, 1023324.24, 1024279.91, 1025055.06, 1022375.97, 1045280.93, 1044671.95, 1044671.95, 1044671.95, 1044671.95, 1047364.67, 1048257.1, 1051180.81, 1051180.81, 1051354.81, 1051354.81, 1051354.81, 1052788.5, 1053205.2, 1053025.2, 1052905.2, 1052845.2, 1053080.38, 1052540.38, 1049515.02, 1051896.73, 1053257.81, 1053377.81, 1052897.81, 1053489.57, 1053489.57, 1053489.57, 1052049.57, 1052889.57, 1050601.57, 1051912.73, 1055070.88, 1055542.77, 1056796.19, 1057210.24, 1057510.24, 1057090.24, 1057745.58, 1057625.58, 1058283.82, 1059416.99, 1064753.03, 1066305.1, 1066605.1, 1065285.1, 1065405.1, 1065705.1, 1067500.95, 1069655.61, 1073422.11, 1073956.7, 1073476.7, 1070231.48, 1071486.43, 1071546.43, 1070346.43, 1070330.84, 1074580.69, 1075774.93, 1074754.93, 1074874.93, 1072828.78, 1072828.78, 1072828.78, 1076541.67, 1076541.67, 1090214.53, 1092057.0, 1092886.3, 1092886.3, 1092886.3, 1092886.3, 1093595.07, 1100041.76, 1103430.6, 1107849.33, 1109759.73, 1109639.73, 1106681.33, 1105901.33, 1105181.33, 1101561.39, 1102380.77, 1105070.42, 1105070.42, 1106139.76, 1108650.47, 1113955.53, 1114195.53, 1113835.53, 1118088.68, 1119519.68, 1119519.68, 1119219.68, 1119099.68, 1122870.2, 1116561.76, 1118112.12, 1118112.12, 1118112.12, 1118112.12, 1117512.12, 1117607.06, 1118860.45, 1116633.29, 1103966.82, 1105203.81, 1105203.81, 1105203.81, 1105203.81, 1105503.81, 1102787.09, 1104279.5, 1095140.73, 1096094.76, 1162130.62, 1155528.42, 1156247.71, 1156247.71, 1156247.71, 1156247.71, 1156247.71, 1156665.72, 1157085.72, 1152704.8, 1152704.8, 1152704.8, 1152704.8, 1152704.8, 1153960.37, 1156174.64, 1158866.87, 1161559.63, 1161799.63, 1161972.13, 1161672.13, 1162263.3, 1161963.3],
+            borderColor: '#2563eb',
+            backgroundColor: '#2563eb15',
+            fill: true,
+            tension: 0.1,
+            pointRadius: 0,
+        }]
+    },
+    options: { responsive: true, plugins: {legend:{display:false}} }
+});
+</script>
+
+<div class="card">
+<h2>📈 IH - 196 笔交易</h2>
+<table class="stats-table">
+<tr><td>总交易次数</td><td class="">196</td></tr><tr><td>总收益率</td><td class="positive">+13.40%</td></tr><tr><td>年化收益率</td><td class="positive">+18.74%</td></tr><tr><td>总盈亏</td><td class="">+134,011元</td></tr><tr><td>最大回撤</td><td class="">-1.36%</td></tr><tr><td>Sharpe比率</td><td class="">0.76</td></tr><tr><td>胜率</td><td class="">91.8%</td></tr><tr><td>盈利次数</td><td class="">180</td></tr><tr><td>亏损次数</td><td class="">16</td></tr><tr><td>平均盈利</td><td class="">+1,001元</td></tr><tr><td>平均亏损</td><td class="">+2,884元</td></tr><tr><td>盈亏比</td><td class="">3.90</td></tr><tr><td>平均持仓时长</td><td class="">1.7小时(20根K线)</td></tr><tr><td>做空基次/均盈亏</td><td class="">87次 / +763元</td></tr><tr><td>做多基次/均盈亏</td><td class="">109次 / +620元</td></tr></table><div id="chart_IH" class="chart-container"></div><h3>交易明细</h3><table class="trade-table">
+<tr><th>入场时间</th><th>方向</th><th>入Z</th><th>入Spread</th><th>出Spread</th>
+<th>点PnL</th><th>元PnL</th><th>持K线</th><th>原因</th></tr>
+<tr>
+<td>01-14 09:40</td>
+<td>做空基差</td>
+<td>+1.95</td>
+<td>-6.2</td>
+<td>-5.6</td>
+<td class="negative">-0.6</td>
+<td class="negative">-386</td>
+<td>145</td>
+<td>Z-Score回归</td>
+</tr>
+<tr>
+<td>01-21 14:50</td>
+<td>做空基差</td>
+<td>+1.72</td>
+<td>-2.0</td>
+<td>-4.2</td>
+<td class="positive">+2.2</td>
+<td class="positive">+455</td>
+<td>16</td>
+<td>Z-Score回归</td>
+</tr>
+<tr>
+<td>01-23 09:35</td>
+<td>做空基差</td>
+<td>+1.91</td>
+<td>-1.4</td>
+<td>+0.2</td>
+<td class="negative">-1.6</td>
+<td class="negative">-685</td>
+<td>193</td>
+<td>Z-Score回归</td>
+</tr>
+<tr>
+<td>01-29 10:15</td>
+<td>做空基差</td>
+<td>+1.52</td>
+<td>+4.2</td>
+<td>+16.0</td>
+<td class="negative">-11.8</td>
+<td class="negative">-3,745</td>
+<td>40</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>01-30 10:35</td>
+<td>做空基差</td>
+<td>+2.23</td>
+<td>+7.0</td>
+<td>+3.2</td>
+<td class="positive">+3.8</td>
+<td class="positive">+935</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>01-30 13:05</td>
+<td>做空基差</td>
+<td>+1.53</td>
+<td>+5.4</td>
+<td>+2.2</td>
+<td class="positive">+3.2</td>
+<td class="positive">+755</td>
+<td>5</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>01-30 14:55</td>
+<td>做空基差</td>
+<td>+1.81</td>
+<td>+6.0</td>
+<td>+25.6</td>
+<td class="negative">-19.6</td>
+<td class="negative">-6,085</td>
+<td>1</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>02-02 13:30</td>
+<td>做多基差</td>
+<td>-2.03</td>
+<td>-1.8</td>
+<td>-11.4</td>
+<td class="negative">-9.6</td>
+<td class="negative">-3,083</td>
+<td>3</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>02-02 13:50</td>
+<td>做多基差</td>
+<td>-4.30</td>
+<td>-8.4</td>
+<td>-16.6</td>
+<td class="negative">-8.2</td>
+<td class="negative">-2,662</td>
+<td>11</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>02-02 14:50</td>
+<td>做多基差</td>
+<td>-5.94</td>
+<td>-20.4</td>
+<td>-13.6</td>
+<td class="positive">+6.8</td>
+<td class="positive">+1,837</td>
+<td>3</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>02-03 09:35</td>
+<td>做多基差</td>
+<td>-2.93</td>
+<td>-10.8</td>
+<td>-6.4</td>
+<td class="positive">+4.4</td>
+<td class="positive">+1,117</td>
+<td>6</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>02-03 10:10</td>
+<td>做多基差</td>
+<td>-1.93</td>
+<td>-7.2</td>
+<td>-4.0</td>
+<td class="positive">+3.2</td>
+<td class="positive">+757</td>
+<td>8</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>02-03 14:55</td>
+<td>做多基差</td>
+<td>-1.61</td>
+<td>-7.8</td>
+<td>-3.4</td>
+<td class="positive">+4.4</td>
+<td class="positive">+1,116</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>02-04 09:30</td>
+<td>做多基差</td>
+<td>-1.56</td>
+<td>-7.6</td>
+<td>-1.2</td>
+<td class="positive">+6.4</td>
+<td class="positive">+1,716</td>
+<td>48</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>02-12 13:55</td>
+<td>做空基差</td>
+<td>+1.74</td>
+<td>-0.4</td>
+<td>-3.0</td>
+<td class="positive">+2.6</td>
+<td class="positive">+576</td>
+<td>51</td>
+<td>Z-Score回归</td>
+</tr>
+<tr>
+<td>02-13 14:50</td>
+<td>做多基差</td>
+<td>-1.53</td>
+<td>-5.6</td>
+<td>-2.4</td>
+<td class="positive">+3.2</td>
+<td class="positive">+757</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>02-24 09:25</td>
+<td>做空基差</td>
+<td>+6.05</td>
+<td>+8.8</td>
+<td>-5.0</td>
+<td class="positive">+13.8</td>
+<td class="positive">+3,936</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>02-24 09:55</td>
+<td>做多基差</td>
+<td>-1.63</td>
+<td>-6.0</td>
+<td>-3.4</td>
+<td class="positive">+2.6</td>
+<td class="positive">+576</td>
+<td>17</td>
+<td>Z-Score回归</td>
+</tr>
+<tr>
+<td>02-25 09:25</td>
+<td>做多基差</td>
+<td>-2.10</td>
+<td>-7.2</td>
+<td>-4.0</td>
+<td class="positive">+3.2</td>
+<td class="positive">+756</td>
+<td>18</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>02-26 09:25</td>
+<td>做多基差</td>
+<td>-3.02</td>
+<td>-8.8</td>
+<td>-4.6</td>
+<td class="positive">+4.2</td>
+<td class="positive">+1,056</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-02 13:30</td>
+<td>做多基差</td>
+<td>-1.53</td>
+<td>-6.4</td>
+<td>-4.2</td>
+<td class="positive">+2.2</td>
+<td class="positive">+456</td>
+<td>21</td>
+<td>Z-Score回归</td>
+</tr>
+<tr>
+<td>03-03 11:00</td>
+<td>做多基差</td>
+<td>-1.80</td>
+<td>-6.8</td>
+<td>+5.4</td>
+<td class="positive">+12.2</td>
+<td class="positive">+3,457</td>
+<td>31</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-04 13:10</td>
+<td>做多基差</td>
+<td>-1.56</td>
+<td>-7.2</td>
+<td>-3.2</td>
+<td class="positive">+4.0</td>
+<td class="positive">+998</td>
+<td>72</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-06 11:15</td>
+<td>做多基差</td>
+<td>-1.52</td>
+<td>-11.2</td>
+<td>-30.6</td>
+<td class="negative">-19.4</td>
+<td class="negative">-6,022</td>
+<td>27</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>03-09 09:30</td>
+<td>做多基差</td>
+<td>-1.58</td>
+<td>-12.8</td>
+<td>-9.8</td>
+<td class="positive">+3.0</td>
+<td class="positive">+699</td>
+<td>46</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-10 09:25</td>
+<td>做空基差</td>
+<td>+4.08</td>
+<td>+5.8</td>
+<td>-6.0</td>
+<td class="positive">+11.8</td>
+<td class="positive">+3,338</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-11 09:25</td>
+<td>做空基差</td>
+<td>+1.83</td>
+<td>-3.2</td>
+<td>-7.4</td>
+<td class="positive">+4.2</td>
+<td class="positive">+1,058</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-17 10:45</td>
+<td>做多基差</td>
+<td>-1.53</td>
+<td>-11.8</td>
+<td>-21.0</td>
+<td class="negative">-9.2</td>
+<td class="negative">-2,962</td>
+<td>32</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>03-18 09:25</td>
+<td>做多基差</td>
+<td>-5.35</td>
+<td>-24.0</td>
+<td>-15.4</td>
+<td class="positive">+8.6</td>
+<td class="positive">+2,378</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-18 09:35</td>
+<td>做多基差</td>
+<td>-1.82</td>
+<td>-14.6</td>
+<td>-28.2</td>
+<td class="negative">-13.6</td>
+<td class="negative">-4,281</td>
+<td>47</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>03-19 09:30</td>
+<td>做多基差</td>
+<td>-2.42</td>
+<td>-19.0</td>
+<td>-27.4</td>
+<td class="negative">-8.4</td>
+<td class="negative">-2,720</td>
+<td>46</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>03-19 14:55</td>
+<td>做多基差</td>
+<td>-2.39</td>
+<td>-25.4</td>
+<td>-21.4</td>
+<td class="positive">+4.0</td>
+<td class="positive">+1,000</td>
+<td>3</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-20 14:40</td>
+<td>做多基差</td>
+<td>-2.08</td>
+<td>-26.2</td>
+<td>-11.2</td>
+<td class="positive">+15.0</td>
+<td class="positive">+4,301</td>
+<td>4</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-23 09:30</td>
+<td>做空基差</td>
+<td>+4.44</td>
+<td>+9.8</td>
+<td>+17.8</td>
+<td class="negative">-8.0</td>
+<td class="negative">-2,598</td>
+<td>15</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>03-23 10:50</td>
+<td>做空基差</td>
+<td>+3.48</td>
+<td>+16.0</td>
+<td>+11.4</td>
+<td class="positive">+4.6</td>
+<td class="positive">+1,183</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-23 11:00</td>
+<td>做空基差</td>
+<td>+2.93</td>
+<td>+12.2</td>
+<td>-4.0</td>
+<td class="positive">+16.2</td>
+<td class="positive">+4,663</td>
+<td>30</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-24 09:30</td>
+<td>做空基差</td>
+<td>+2.04</td>
+<td>+13.6</td>
+<td>+10.0</td>
+<td class="positive">+3.6</td>
+<td class="positive">+883</td>
+<td>7</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-24 10:10</td>
+<td>做空基差</td>
+<td>+1.70</td>
+<td>+11.0</td>
+<td>+4.0</td>
+<td class="positive">+7.0</td>
+<td class="positive">+1,902</td>
+<td>40</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-31 09:25</td>
+<td>做空基差</td>
+<td>+2.68</td>
+<td>+18.0</td>
+<td>+14.0</td>
+<td class="positive">+4.0</td>
+<td class="positive">+1,002</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-31 10:10</td>
+<td>做空基差</td>
+<td>+1.85</td>
+<td>+16.2</td>
+<td>+12.8</td>
+<td class="positive">+3.4</td>
+<td class="positive">+822</td>
+<td>24</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-31 14:55</td>
+<td>做空基差</td>
+<td>+2.56</td>
+<td>+17.4</td>
+<td>-51.0</td>
+<td class="positive">+68.4</td>
+<td class="positive">+20,322</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-01 09:30</td>
+<td>做多基差</td>
+<td>-10.23</td>
+<td>-42.0</td>
+<td>-37.0</td>
+<td class="positive">+5.0</td>
+<td class="positive">+1,302</td>
+<td>48</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-02 09:30</td>
+<td>做多基差</td>
+<td>-2.14</td>
+<td>-43.4</td>
+<td>-29.0</td>
+<td class="positive">+14.4</td>
+<td class="positive">+4,122</td>
+<td>196</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-13 09:25</td>
+<td>做多基差</td>
+<td>-3.92</td>
+<td>-50.0</td>
+<td>-44.6</td>
+<td class="positive">+5.4</td>
+<td class="positive">+1,422</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-13 10:50</td>
+<td>做多基差</td>
+<td>-1.54</td>
+<td>-46.6</td>
+<td>-45.4</td>
+<td class="positive">+1.2</td>
+<td class="positive">+161</td>
+<td>95</td>
+<td>Z-Score回归</td>
+</tr>
+<tr>
+<td>04-16 09:25</td>
+<td>做多基差</td>
+<td>-4.17</td>
+<td>-53.0</td>
+<td>-44.8</td>
+<td class="positive">+8.2</td>
+<td class="positive">+2,260</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-16 14:20</td>
+<td>做空基差</td>
+<td>+2.55</td>
+<td>-41.0</td>
+<td>-29.2</td>
+<td class="negative">-11.8</td>
+<td class="negative">-3,740</td>
+<td>8</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>04-17 09:30</td>
+<td>做空基差</td>
+<td>+3.42</td>
+<td>-38.2</td>
+<td>-41.8</td>
+<td class="positive">+3.6</td>
+<td class="positive">+880</td>
+<td>97</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-21 09:40</td>
+<td>做空基差</td>
+<td>+1.79</td>
+<td>-34.6</td>
+<td>-37.6</td>
+<td class="positive">+3.0</td>
+<td class="positive">+700</td>
+<td>42</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-23 09:25</td>
+<td>做空基差</td>
+<td>+1.89</td>
+<td>-31.0</td>
+<td>-35.8</td>
+<td class="positive">+4.8</td>
+<td class="positive">+1,240</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+
+</table></div>
+<script>
+new Chart(document.getElementById('chart_IH'), {
+    type: 'line',
+    data: {
+        labels: ["08-04 10:10", "08-05 10:35", "08-06 11:10", "08-07 13:00", "08-08 11:25", "08-11 11:25", "08-12 11:20", "08-13 13:00", "08-14 13:10", "08-15 13:15", "08-18 13:05", "08-19 11:30", "08-20 11:25", "08-21 11:20", "08-22 11:25", "08-25 11:20", "08-26 11:20", "08-27 11:25", "08-28 13:05", "08-29 13:10", "09-01 13:20", "09-02 13:10", "09-03 13:10", "09-04 13:10", "09-05 13:00", "09-08 13:20", "09-09 13:30", "09-10 13:30", "09-11 13:30", "09-12 13:35", "09-15 13:40", "09-16 13:45", "09-17 13:45", "09-18 13:45", "09-19 14:20", "09-22 14:55", "09-24 10:15", "09-25 10:20", "09-26 10:25", "09-29 10:50", "09-30 13:55", "10-09 14:15", "10-10 14:30", "10-13 14:45", "10-14 14:40", "10-15 14:35", "10-16 14:35", "10-17 14:35", "10-20 14:25", "10-21 14:20", "10-22 14:25", "10-23 14:40", "10-27 09:55", "10-28 10:15", "10-29 11:15", "10-30 13:20", "10-31 13:20", "11-03 13:30", "11-04 13:30", "11-05 13:25", "11-06 13:30", "11-07 13:25", "11-10 13:20", "11-11 13:15", "11-12 13:15", "11-13 13:20", "11-14 13:15", "11-17 13:25", "11-18 13:30", "11-19 13:40", "11-20 13:50", "11-21 13:50", "11-24 13:55", "11-25 13:50", "11-26 13:55", "11-27 13:50", "11-28 14:00", "12-01 14:10", "12-02 14:15", "12-03 14:10", "12-04 14:15", "12-05 14:10", "12-08 14:00", "12-09 14:00", "12-10 14:05", "12-11 14:05", "12-12 14:05", "12-15 14:15", "12-16 14:15", "12-17 14:35", "12-18 14:35", "12-19 14:40", "12-22 14:55", "12-23 14:50", "12-24 14:45", "12-25 14:45", "12-29 09:35", "12-30 09:55", "12-31 10:10", "01-05 10:40", "01-06 10:35", "01-07 10:25", "01-08 10:15", "01-09 10:15", "01-12 10:20", "01-13 10:25", "01-14 10:40", "01-15 10:30", "01-16 10:25", "01-19 10:20", "01-20 10:10", "01-21 10:00", "01-22 10:00", "01-23 10:05", "01-26 10:00", "01-27 09:55", "01-28 09:50", "01-29 09:50", "01-30 09:50", "02-02 10:15", "02-03 11:00", "02-04 11:05", "02-05 11:05", "02-06 11:00", "02-09 10:55", "02-10 10:50", "02-11 10:45", "02-12 10:40", "02-13 10:40", "02-24 11:05", "02-25 11:10", "02-26 11:10", "02-27 11:00", "03-02 10:50", "03-03 10:50", "03-04 10:50", "03-05 10:45", "03-06 10:40", "03-09 10:50", "03-10 11:00", "03-11 11:05", "03-12 11:00", "03-13 10:50", "03-16 10:45", "03-17 10:35", "03-18 10:55", "03-19 11:00", "03-20 11:10", "03-23 13:10", "03-24 13:25", "03-25 13:25", "03-26 13:20", "03-27 13:15", "03-30 13:10", "03-31 13:20", "04-01 13:35", "04-02 13:40", "04-03 13:35", "04-07 13:30", "04-08 13:20", "04-09 13:20", "04-10 13:10", "04-13 13:15", "04-14 13:10", "04-15 13:10", "04-16 13:15", "04-17 13:25", "04-20 13:20", "04-21 13:25", "04-22 13:25", "04-23 13:30"],
+        datasets: [{
+            label: 'IH 权益曲线',
+            data: [1000000.0, 1000670.64, 1001982.83, 1002308.08, 1002248.08, 1003370.98, 1003550.98, 1005435.66, 1006119.93, 1006461.71, 1006401.71, 1005981.71, 1006323.77, 1006563.77, 1007144.6, 1007364.47, 1007822.25, 1010380.12, 1010975.37, 1011433.93, 1012409.88, 1012349.88, 1012267.92, 1012546.53, 1012546.53, 1014604.16, 1015402.32, 1015762.32, 1015861.22, 1016559.43, 1018075.33, 1018473.51, 1018992.2, 1019990.47, 1024048.46, 1028105.95, 1034224.54, 1034803.45, 1036642.08, 1038258.41, 1045896.9, 1048431.17, 1048865.42, 1050502.19, 1050262.19, 1051440.82, 1051800.82, 1054297.54, 1054297.54, 1054297.54, 1054634.78, 1056028.73, 1058369.2, 1059495.16, 1064304.34, 1066006.5, 1066186.5, 1070159.84, 1070159.84, 1069799.84, 1070256.77, 1069836.77, 1069776.77, 1070173.07, 1070353.07, 1070628.83, 1071204.42, 1072800.97, 1073017.98, 1073992.12, 1075288.86, 1075626.3, 1077224.84, 1077224.84, 1077923.0, 1077923.0, 1078381.29, 1079537.58, 1080115.61, 1080115.61, 1079794.0, 1079554.0, 1079554.0, 1079831.72, 1080469.5, 1080529.5, 1076667.58, 1077763.0, 1078340.73, 1080495.35, 1080735.35, 1080772.89, 1080606.55, 1080846.55, 1080786.55, 1080643.01, 1083870.56, 1087278.68, 1088851.01, 1092259.97, 1092499.97, 1093099.97, 1092799.97, 1093014.87, 1093768.33, 1094641.42, 1095367.59, 1095547.59, 1094767.59, 1095701.56, 1095701.56, 1095701.56, 1096001.56, 1096036.93, 1095616.93, 1095676.93, 1094656.93, 1095472.32, 1091727.08, 1087332.63, 1085298.32, 1086774.68, 1088130.66, 1088130.66, 1088130.66, 1088130.66, 1088130.66, 1088130.66, 1088130.66, 1093758.58, 1094730.28, 1095786.04, 1095786.04, 1095786.04, 1096242.22, 1099698.95, 1098858.95, 1100697.25, 1093895.39, 1098712.23, 1099770.05, 1099770.05, 1099770.05, 1099770.05, 1099770.05, 1099306.48, 1094125.32, 1093184.55, 1095710.56, 1101555.98, 1103518.41, 1103518.41, 1103518.41, 1103518.41, 1105240.18, 1125304.28, 1126486.35, 1126606.35, 1126726.35, 1126906.35, 1131088.02, 1131088.02, 1132389.65, 1132509.65, 1132670.42, 1134930.44, 1131130.58, 1130890.58, 1132490.84, 1132770.95, 1134010.85],
+            borderColor: '#059669',
+            backgroundColor: '#05966915',
+            fill: true,
+            tension: 0.1,
+            pointRadius: 0,
+        }]
+    },
+    options: { responsive: true, plugins: {legend:{display:false}} }
+});
+</script>
+
+<div class="card">
+<h2>📈 IM - 357 笔交易</h2>
+<table class="stats-table">
+<tr><td>总交易次数</td><td class="">357</td></tr><tr><td>总收益率</td><td class="positive">+37.23%</td></tr><tr><td>年化收益率</td><td class="positive">+52.07%</td></tr><tr><td>总盈亏</td><td class="">+372,335元</td></tr><tr><td>最大回撤</td><td class="">-6.19%</td></tr><tr><td>Sharpe比率</td><td class="">0.39</td></tr><tr><td>胜率</td><td class="">78.2%</td></tr><tr><td>盈利次数</td><td class="">279</td></tr><tr><td>亏损次数</td><td class="">78</td></tr><tr><td>平均盈利</td><td class="">+2,249元</td></tr><tr><td>平均亏损</td><td class="">+3,270元</td></tr><tr><td>盈亏比</td><td class="">2.46</td></tr><tr><td>平均持仓时长</td><td class="">0.8小时(9根K线)</td></tr><tr><td>做空基次/均盈亏</td><td class="">184次 / +816元</td></tr><tr><td>做多基次/均盈亏</td><td class="">173次 / +1284元</td></tr></table><div id="chart_IM" class="chart-container"></div><h3>交易明细</h3><table class="trade-table">
+<tr><th>入场时间</th><th>方向</th><th>入Z</th><th>入Spread</th><th>出Spread</th>
+<th>点PnL</th><th>元PnL</th><th>持K线</th><th>原因</th></tr>
+<tr>
+<td>03-20 14:15</td>
+<td>做多基差</td>
+<td>-2.41</td>
+<td>-255.2</td>
+<td>-251.4</td>
+<td class="positive">+3.8</td>
+<td class="positive">+537</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-20 14:25</td>
+<td>做多基差</td>
+<td>-2.29</td>
+<td>-254.6</td>
+<td>-269.8</td>
+<td class="negative">-15.2</td>
+<td class="negative">-3,263</td>
+<td>3</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>03-20 14:45</td>
+<td>做多基差</td>
+<td>-4.66</td>
+<td>-278.0</td>
+<td>-297.2</td>
+<td class="negative">-19.2</td>
+<td class="negative">-4,062</td>
+<td>1</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>03-20 14:55</td>
+<td>做多基差</td>
+<td>-7.49</td>
+<td>-317.2</td>
+<td>+315.0</td>
+<td class="positive">+632.2</td>
+<td class="positive">+126,219</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-23 09:30</td>
+<td>做空基差</td>
+<td>+8.48</td>
+<td>+101.8</td>
+<td>+93.2</td>
+<td class="positive">+8.6</td>
+<td class="positive">+1,502</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-23 09:40</td>
+<td>做空基差</td>
+<td>+6.78</td>
+<td>+94.4</td>
+<td>+108.4</td>
+<td class="negative">-14.0</td>
+<td class="negative">-3,018</td>
+<td>4</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>03-23 10:05</td>
+<td>做空基差</td>
+<td>+4.99</td>
+<td>+97.0</td>
+<td>+107.2</td>
+<td class="negative">-10.2</td>
+<td class="negative">-2,258</td>
+<td>8</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>03-23 10:50</td>
+<td>做空基差</td>
+<td>+3.78</td>
+<td>+110.2</td>
+<td>+102.2</td>
+<td class="positive">+8.0</td>
+<td class="positive">+1,383</td>
+<td>2</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-23 11:05</td>
+<td>做空基差</td>
+<td>+3.47</td>
+<td>+107.6</td>
+<td>+103.6</td>
+<td class="positive">+4.0</td>
+<td class="positive">+584</td>
+<td>10</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-23 13:25</td>
+<td>做空基差</td>
+<td>+2.75</td>
+<td>+105.6</td>
+<td>+102.6</td>
+<td class="positive">+3.0</td>
+<td class="positive">+386</td>
+<td>5</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-23 13:55</td>
+<td>做空基差</td>
+<td>+2.54</td>
+<td>+110.4</td>
+<td>+103.6</td>
+<td class="positive">+6.8</td>
+<td class="positive">+1,147</td>
+<td>3</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-23 14:15</td>
+<td>做空基差</td>
+<td>+2.37</td>
+<td>+106.2</td>
+<td>+100.8</td>
+<td class="positive">+5.4</td>
+<td class="positive">+867</td>
+<td>2</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-23 14:30</td>
+<td>做空基差</td>
+<td>+2.34</td>
+<td>+114.2</td>
+<td>+106.0</td>
+<td class="positive">+8.2</td>
+<td class="positive">+1,428</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-23 14:40</td>
+<td>做空基差</td>
+<td>+2.23</td>
+<td>+107.2</td>
+<td>+127.0</td>
+<td class="negative">-19.8</td>
+<td class="negative">-4,174</td>
+<td>4</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>03-24 09:30</td>
+<td>做空基差</td>
+<td>+2.13</td>
+<td>+111.8</td>
+<td>+108.0</td>
+<td class="positive">+3.8</td>
+<td class="positive">+546</td>
+<td>2</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-24 09:45</td>
+<td>做空基差</td>
+<td>+2.06</td>
+<td>+112.6</td>
+<td>+108.6</td>
+<td class="positive">+4.0</td>
+<td class="positive">+587</td>
+<td>3</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-24 10:05</td>
+<td>做空基差</td>
+<td>+1.96</td>
+<td>+110.8</td>
+<td>+107.6</td>
+<td class="positive">+3.2</td>
+<td class="positive">+427</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-24 10:15</td>
+<td>做空基差</td>
+<td>+1.88</td>
+<td>+105.4</td>
+<td>+101.8</td>
+<td class="positive">+3.6</td>
+<td class="positive">+506</td>
+<td>2</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-24 10:30</td>
+<td>做空基差</td>
+<td>+1.81</td>
+<td>+102.6</td>
+<td>+99.4</td>
+<td class="positive">+3.2</td>
+<td class="positive">+425</td>
+<td>2</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-24 10:45</td>
+<td>做空基差</td>
+<td>+1.79</td>
+<td>+107.4</td>
+<td>+102.4</td>
+<td class="positive">+5.0</td>
+<td class="positive">+785</td>
+<td>2</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-24 11:00</td>
+<td>做空基差</td>
+<td>+1.69</td>
+<td>+99.4</td>
+<td>+109.4</td>
+<td class="negative">-10.0</td>
+<td class="negative">-2,214</td>
+<td>12</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>03-24 13:35</td>
+<td>做空基差</td>
+<td>+1.53</td>
+<td>+103.2</td>
+<td>+97.4</td>
+<td class="positive">+5.8</td>
+<td class="positive">+945</td>
+<td>9</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-31 10:10</td>
+<td>做空基差</td>
+<td>+1.90</td>
+<td>+120.2</td>
+<td>+114.0</td>
+<td class="positive">+6.2</td>
+<td class="positive">+1,021</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>03-31 10:30</td>
+<td>做空基差</td>
+<td>+1.51</td>
+<td>+117.8</td>
+<td>-250.0</td>
+<td class="positive">+367.8</td>
+<td class="positive">+73,343</td>
+<td>36</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-01 09:30</td>
+<td>做多基差</td>
+<td>-10.97</td>
+<td>-218.0</td>
+<td>-215.0</td>
+<td class="positive">+3.0</td>
+<td class="positive">+384</td>
+<td>41</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-01 14:25</td>
+<td>做多基差</td>
+<td>-2.35</td>
+<td>-220.4</td>
+<td>-216.4</td>
+<td class="positive">+4.0</td>
+<td class="positive">+584</td>
+<td>6</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-02 09:25</td>
+<td>做多基差</td>
+<td>-1.86</td>
+<td>-183.0</td>
+<td>-217.2</td>
+<td class="negative">-34.2</td>
+<td class="negative">-7,055</td>
+<td>1</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>04-02 09:35</td>
+<td>做多基差</td>
+<td>-2.11</td>
+<td>-220.0</td>
+<td>-217.0</td>
+<td class="positive">+3.0</td>
+<td class="positive">+385</td>
+<td>4</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-02 10:00</td>
+<td>做多基差</td>
+<td>-1.97</td>
+<td>-217.4</td>
+<td>-213.6</td>
+<td class="positive">+3.8</td>
+<td class="positive">+545</td>
+<td>17</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-02 11:30</td>
+<td>做多基差</td>
+<td>-1.66</td>
+<td>-218.2</td>
+<td>-214.2</td>
+<td class="positive">+4.0</td>
+<td class="positive">+586</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-02 13:05</td>
+<td>做多基差</td>
+<td>-1.61</td>
+<td>-215.0</td>
+<td>-233.0</td>
+<td class="negative">-18.0</td>
+<td class="negative">-3,814</td>
+<td>23</td>
+<td>止损</td>
+</tr>
+<tr>
+<td>04-10 09:25</td>
+<td>做多基差</td>
+<td>-1.69</td>
+<td>-225.0</td>
+<td>-220.8</td>
+<td class="positive">+4.2</td>
+<td class="positive">+619</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-13 09:25</td>
+<td>做空基差</td>
+<td>+1.98</td>
+<td>-213.0</td>
+<td>-219.6</td>
+<td class="positive">+6.6</td>
+<td class="positive">+1,099</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-13 13:00</td>
+<td>做多基差</td>
+<td>-1.60</td>
+<td>-224.0</td>
+<td>-220.6</td>
+<td class="positive">+3.4</td>
+<td class="positive">+458</td>
+<td>26</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-14 10:25</td>
+<td>做多基差</td>
+<td>-1.68</td>
+<td>-224.8</td>
+<td>-221.6</td>
+<td class="positive">+3.2</td>
+<td class="positive">+417</td>
+<td>2</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-14 10:50</td>
+<td>做多基差</td>
+<td>-1.66</td>
+<td>-224.8</td>
+<td>-221.4</td>
+<td class="positive">+3.4</td>
+<td class="positive">+456</td>
+<td>46</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-15 14:55</td>
+<td>做空基差</td>
+<td>+1.80</td>
+<td>-216.0</td>
+<td>-231.6</td>
+<td class="positive">+15.6</td>
+<td class="positive">+2,896</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-16 10:55</td>
+<td>做多基差</td>
+<td>-1.57</td>
+<td>-226.2</td>
+<td>-222.6</td>
+<td class="positive">+3.6</td>
+<td class="positive">+494</td>
+<td>4</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-16 13:30</td>
+<td>做多基差</td>
+<td>-1.85</td>
+<td>-227.2</td>
+<td>-222.4</td>
+<td class="positive">+4.8</td>
+<td class="positive">+734</td>
+<td>9</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-17 09:25</td>
+<td>做空基差</td>
+<td>+3.02</td>
+<td>-213.0</td>
+<td>-224.8</td>
+<td class="positive">+11.8</td>
+<td class="positive">+2,134</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-17 10:50</td>
+<td>做空基差</td>
+<td>+1.50</td>
+<td>-217.6</td>
+<td>-220.6</td>
+<td class="positive">+3.0</td>
+<td class="positive">+373</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-17 11:05</td>
+<td>做空基差</td>
+<td>+1.52</td>
+<td>-217.6</td>
+<td>-220.8</td>
+<td class="positive">+3.2</td>
+<td class="positive">+413</td>
+<td>8</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-20 09:25</td>
+<td>做空基差</td>
+<td>+5.32</td>
+<td>-206.0</td>
+<td>-219.8</td>
+<td class="positive">+13.8</td>
+<td class="positive">+2,532</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-20 09:40</td>
+<td>做空基差</td>
+<td>+2.02</td>
+<td>-216.0</td>
+<td>-219.8</td>
+<td class="positive">+3.8</td>
+<td class="positive">+532</td>
+<td>44</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-21 09:25</td>
+<td>做空基差</td>
+<td>+3.89</td>
+<td>-206.8</td>
+<td>-215.0</td>
+<td class="positive">+8.2</td>
+<td class="positive">+1,412</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-21 09:35</td>
+<td>做空基差</td>
+<td>+3.48</td>
+<td>-208.0</td>
+<td>-212.2</td>
+<td class="positive">+4.2</td>
+<td class="positive">+613</td>
+<td>1</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-21 09:45</td>
+<td>做空基差</td>
+<td>+2.25</td>
+<td>-212.6</td>
+<td>-217.0</td>
+<td class="positive">+4.4</td>
+<td class="positive">+652</td>
+<td>23</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-21 14:10</td>
+<td>做空基差</td>
+<td>+1.57</td>
+<td>-213.6</td>
+<td>-216.6</td>
+<td class="positive">+3.0</td>
+<td class="positive">+372</td>
+<td>2</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-23 09:50</td>
+<td>做空基差</td>
+<td>+1.52</td>
+<td>-212.8</td>
+<td>-216.2</td>
+<td class="positive">+3.4</td>
+<td class="positive">+451</td>
+<td>3</td>
+<td>止盈</td>
+</tr>
+<tr>
+<td>04-23 10:45</td>
+<td>做空基差</td>
+<td>+1.84</td>
+<td>-211.2</td>
+<td>-215.8</td>
+<td class="positive">+4.6</td>
+<td class="positive">+691</td>
+<td>4</td>
+<td>止盈</td>
+</tr>
+
+</table></div>
+<script>
+new Chart(document.getElementById('chart_IM'), {
+    type: 'line',
+    data: {
+        labels: ["08-04 10:10", "08-05 10:15", "08-06 10:25", "08-07 10:20", "08-08 10:20", "08-11 10:25", "08-12 10:40", "08-13 10:50", "08-14 11:05", "08-15 11:20", "08-18 13:35", "08-19 13:40", "08-20 13:30", "08-21 13:50", "08-22 13:45", "08-25 13:40", "08-26 13:35", "08-27 13:40", "08-28 14:00", "09-01 09:35", "09-02 09:50", "09-03 09:40", "09-04 09:45", "09-05 09:40", "09-08 09:40", "09-09 09:30", "09-10 09:45", "09-11 10:35", "09-12 10:45", "09-15 10:45", "09-16 11:05", "09-17 10:55", "09-18 13:00", "09-22 10:15", "09-23 13:25", "09-24 13:35", "09-25 13:25", "09-26 13:15", "09-29 13:05", "09-30 14:00", "10-09 14:05", "10-10 14:10", "10-13 14:05", "10-14 13:55", "10-15 13:45", "10-16 13:35", "10-17 13:35", "10-20 13:45", "10-21 13:55", "10-22 14:10", "10-23 14:15", "10-24 14:20", "10-27 14:40", "10-28 14:35", "10-29 14:25", "10-30 14:25", "10-31 14:50", "11-03 14:55", "11-04 14:45", "11-06 09:25", "11-06 14:50", "11-10 09:50", "11-11 10:00", "11-12 09:55", "11-13 10:15", "11-14 10:25", "11-17 10:35", "11-18 10:40", "11-19 10:40", "11-20 10:35", "11-21 10:55", "11-24 13:25", "11-25 13:45", "11-26 13:45", "11-27 13:35", "11-28 13:40", "12-01 13:55", "12-02 13:55", "12-03 13:45", "12-04 13:35", "12-05 13:40", "12-08 13:50", "12-09 13:40", "12-10 13:50", "12-11 14:20", "12-12 14:15", "12-15 14:05", "12-16 14:00", "12-17 13:55", "12-18 14:05", "12-22 09:55", "12-23 09:50", "12-24 10:00", "12-25 09:50", "12-26 09:40", "12-29 09:35", "12-30 09:25", "12-30 14:50", "12-31 14:40", "01-06 09:25", "01-07 09:45", "01-08 09:35", "01-09 09:25", "01-09 14:55", "01-12 14:50", "01-14 10:45", "01-15 13:25", "01-16 13:35", "01-19 13:25", "01-20 14:10", "01-21 14:25", "01-22 14:50", "01-26 09:55", "01-27 10:30", "01-28 10:20", "01-29 10:40", "01-30 13:05", "02-02 13:50", "02-04 10:10", "02-05 10:00", "02-06 10:10", "02-09 10:10", "02-10 10:00", "02-11 09:50", "02-12 09:50", "02-13 09:50", "02-24 10:00", "02-25 10:20", "02-26 10:10", "02-27 10:40", "03-02 11:00", "03-03 11:05", "03-04 10:55", "03-05 10:45", "03-06 11:05", "03-09 13:30", "03-10 13:55", "03-11 13:55", "03-12 13:55", "03-13 14:05", "03-16 14:20", "03-17 14:20", "03-18 14:20", "03-20 10:05", "03-23 14:50", "03-25 10:35", "03-26 10:30", "03-27 10:20", "03-30 10:10", "03-31 10:05", "04-01 10:25", "04-02 10:55", "04-03 11:10", "04-07 11:00", "04-08 10:50", "04-09 10:40", "04-10 10:40", "04-13 10:40", "04-14 11:00", "04-15 10:55", "04-16 11:00", "04-17 13:00", "04-20 13:10", "04-21 13:40", "04-22 13:45", "04-23 14:00"],
+        datasets: [{
+            label: 'IM 权益曲线',
+            data: [1000000.0, 1000800.2, 1002358.61, 1002996.34, 1003394.11, 1004471.06, 1004862.8, 1005772.47, 1006079.28, 1008186.25, 1006168.02, 1008106.12, 1008106.12, 1010709.96, 1010709.96, 1011029.96, 1011335.14, 1011878.81, 1004757.31, 1004969.86, 1004127.67, 1004127.67, 1002597.94, 1002667.81, 999576.7, 999576.7, 996316.38, 994456.02, 996752.36, 993458.17, 995095.76, 995095.76, 995964.68, 1067753.88, 1066622.18, 1068122.43, 1068122.43, 1068122.43, 1068122.43, 1069902.44, 1070287.07, 1072432.0, 1074419.86, 1074419.86, 1074419.86, 1074419.86, 1076209.18, 1078513.48, 1083376.97, 1085637.6, 1087628.5, 1088927.34, 1097848.33, 1097848.33, 1097848.33, 1098048.33, 1101245.96, 1105418.7, 1105418.7, 1108635.04, 1107515.04, 1105178.83, 1105310.43, 1105710.43, 1108749.88, 1108600.89, 1107532.93, 1108985.87, 1111452.53, 1111452.53, 1111990.37, 1106494.02, 1104784.01, 1106614.12, 1106614.12, 1108963.98, 1107540.6, 1108369.21, 1108369.21, 1108369.21, 1109199.39, 1112774.82, 1112494.82, 1111429.35, 1111498.17, 1111445.92, 1111445.92, 1111525.92, 1111845.92, 1109221.7, 1047946.12, 1046666.12, 1048239.65, 1048239.65, 1048239.65, 1048239.65, 1048239.65, 1048239.65, 1048239.65, 1111166.28, 1114587.91, 1114587.91, 1114587.91, 1114587.91, 1114427.91, 1113616.09, 1116143.72, 1117365.76, 1117365.76, 1118230.72, 1117586.39, 1119815.87, 1115730.58, 1117133.17, 1117133.17, 1119113.49, 1128059.45, 1124428.66, 1119526.98, 1119526.98, 1133957.12, 1142488.56, 1142488.56, 1142488.56, 1144618.0, 1145066.76, 1152205.26, 1155310.79, 1155310.79, 1151610.27, 1147468.73, 1148722.66, 1148722.66, 1148722.66, 1148866.42, 1142803.24, 1148447.61, 1154336.26, 1153536.26, 1152795.73, 1155752.74, 1156447.01, 1158341.07, 1165167.77, 1291334.52, 1289007.66, 1289007.66, 1289007.66, 1289007.66, 1289007.66, 1362891.19, 1357547.9, 1354985.3, 1354985.3, 1354985.3, 1354985.3, 1355604.15, 1356703.19, 1357698.36, 1358034.84, 1361211.13, 1364827.11, 1367572.6, 1370821.26, 1371193.25, 1372335.08],
+            borderColor: '#7c3aed',
+            backgroundColor: '#7c3aed15',
+            fill: true,
+            tension: 0.1,
+            pointRadius: 0,
+        }]
+    },
+    options: { responsive: true, plugins: {legend:{display:false}} }
+});
+</script>
+
+
+</body></html>

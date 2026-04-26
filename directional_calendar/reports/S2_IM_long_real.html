@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8">
+<title>Backtest Report V2</title>
+<style>
+body { font-family:-apple-system,"Segoe UI",sans-serif; margin:20px; background:#f8fafc; }
+.card { background:#fff; border-radius:8px; padding:24px; margin:16px 0; box-shadow:0 1px 3px rgba(0,0,0,.08); }
+h1,h2 { color:#1e293b; } table { width:100%; border-collapse:collapse; font-size:13px; }
+th,td { padding:8px 12px; text-align:left; border-bottom:1px solid #e2e8f0; }
+th { background:#f1f5f9; } .pos { color:#dc2626; } .neg { color:#16a34a; }
+.tag { display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:bold; }
+.tag-open { bg:#dbeafe; color:#1d4ed8; }
+.tag-switch { bg:#fef3c7; color:#d97706; }
+.tag-rollover { bg:#ede9fe; color:#7c3aed; }
+tag-product { bg:#fce7f3; color:#db2777; }
+.tag-close { bg:#f1f5f9; color:#475569; }
+</style></head>
+<body>
+<div class="card">
+<h1>Directional Calendar Spread - Backtest V2</h1>
+<p>Generated: 2026-04-25 22:58:17</p>
+<p>Features: <b>Rollover</b> | <b>Multi-Product Switch</b> | <b>Z-Score Basis</b></p>
+</div>
+
+<div class="card"><h2>Summary</h2><table><tr><td><b>Initial Capital</b></td><td>1,000,000 CNY</td></tr><tr><td><b>Final Equity</b></td><td>1,118,651.9956800002</td></tr><tr><td><b>Total Return</b></td><td>+11.87%</td></tr><tr><td><b>Trades</b></td><td>3</td></tr><tr><td><b>Commission</b></td><td>145</td></tr></table></div>
+
+<div class="card"><h2>Equity Curve</h2>
+<div id="eq_chart" style="width:100%; height:400px;"></div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+new Chart(document.getElementById('eq_chart'), {
+    type:'line',
+    data:{
+        labels:["03-25 14:45", "03-26 10:15", "03-26 11:15", "03-26 13:45", "03-26 14:45", "03-27 10:15", "03-27 11:15", "03-27 13:45", "03-27 14:45", "03-30 10:15", "03-30 11:15", "03-30 13:45", "03-30 14:45", "03-31 10:15", "03-31 11:15", "03-31 13:45", "03-31 14:45", "04-01 10:15", "04-01 11:15", "04-01 13:45", "04-01 14:45", "04-02 10:15", "04-02 11:15", "04-02 13:45", "04-02 14:45", "04-03 10:15", "04-03 11:15", "04-03 13:45", "04-03 14:45", "04-07 10:15", "04-07 11:15", "04-07 13:45", "04-07 14:45", "04-08 10:15", "04-08 11:15", "04-08 13:45", "04-08 14:45", "04-09 10:15", "04-09 11:15", "04-09 13:45", "04-09 14:45", "04-10 10:15", "04-10 11:15", "04-10 13:45", "04-10 14:45", "04-13 10:15", "04-13 11:15", "04-13 13:45", "04-13 14:45", "04-14 10:15", "04-14 11:15", "04-14 13:45", "04-14 14:45", "04-15 10:15", "04-15 11:15", "04-15 13:45", "04-15 14:45", "04-16 10:15", "04-16 11:15", "04-16 13:45", "04-16 14:45", "04-17 10:15", "04-17 11:15", "04-17 13:45", "04-17 14:45", "04-20 10:15", "04-20 11:15", "04-20 13:45", "04-20 14:45", "04-21 10:15", "04-21 11:15", "04-21 13:45", "04-21 14:45", "04-22 10:15", "04-22 11:15", "04-22 13:45", "04-22 14:45", "04-23 10:15", "04-23 11:15", "04-23 13:45", "04-23 14:45", "04-24 10:15", "04-24 11:15", "04-24 13:45", "04-24 14:45"],
+        datasets:[{
+            label:'Equity (CNY)',
+            data:[999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 999965.49, 1118652.0, 1118652.0, 1118652.0, 1118652.0, 1118652.0, 1118652.0, 1118652.0, 1118652.0, 1118652.0, 1118652.0, 1118652.0, 1118652.0, 1118652.0, 1118652.0, 1118652.0, 1118652.0, 1118652.0, 1118652.0, 1118652.0, 1118652.0, 1118652.0, 1118652.0, 1118652.0],
+            borderColor:'#2563eb',
+            backgroundColor:'rgba(37,99,235,0.08)',
+            fill:true, tension:0.15, pointRadius:0
+        }]
+    },
+    options:{ responsive:true, plugins:{legend:{display:false}},
+        scales:{y:{ticks:{callback:v=>v.toLocaleString()+' CNY'}}}
+    }
+});
+</script></div>
+
+<div class="card"><h2>Trade Details (3 trades)</h2>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Time</th>
+      <th>Action</th>
+      <th>Product</th>
+      <th>From</th>
+      <th>To</th>
+      <th>Price_From</th>
+      <th>Price_To</th>
+      <th>PnL_CNY</th>
+      <th>Commission</th>
+      <th>Reason</th>
+      <th>Zscore</th>
+      <th>BasisRate</th>
+      <th>Equity</th>
+      <th>Position</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>2026-03-25 13:50</td>
+      <td>OPEN</td>
+      <td>IM</td>
+      <td>-</td>
+      <td>IM2606</td>
+      <td>0.0</td>
+      <td>7503.2</td>
+      <td>-35</td>
+      <td>35</td>
+      <td>Open IM LONG (signal=2)</td>
+      <td>-1.12</td>
+      <td>-11.25%</td>
+      <td>999,965</td>
+      <td>IM/IM2606/NEAR</td>
+    </tr>
+    <tr>
+      <td>2026-04-17 10:50</td>
+      <td>SWITCH_TO_FAR</td>
+      <td>IM</td>
+      <td>IM2606</td>
+      <td>IM2609</td>
+      <td>8097.0</td>
+      <td>7879.0</td>
+      <td>+118,687</td>
+      <td>73</td>
+      <td>NEAR->FAR: z=1.01</td>
+      <td>1.01</td>
+      <td>-10.16%</td>
+      <td>1,118,652</td>
+      <td>IM/IM2609/FAR</td>
+    </tr>
+    <tr>
+      <td>2026-04-24 15:00</td>
+      <td>CLOSE</td>
+      <td>IM</td>
+      <td>IM2609</td>
+      <td>-</td>
+      <td>7957.8</td>
+      <td>0.0</td>
+      <td>+15,723</td>
+      <td>37</td>
+      <td>SETTLE at end of data</td>
+      <td>2.39</td>
+      <td>-9.44%</td>
+      <td>1,134,375</td>
+      <td>-</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="card"><h2>Strategy Logic</h2>
+<ul>
+<li><b>Contract Rollover:</b> Auto-rollover 5 days before expiry</li>
+<li><b>Product Switch:</b> Based on direction signal strength x product beta</li>
+<li><b>Near/Far Switch:</b> Z-score > 1.0σ → Far | Z-score < 0.3σ → Near</li>
+<li><b>Cooldown:</b> 6 bars between switches</li>
+</ul>
+</div>
+
+</body></html>

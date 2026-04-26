@@ -1,0 +1,120 @@
+# ======================================================
+# 带方向的股指期货跨期套利系统 - 配置文件
+# ======================================================
+
+# 品种配置（灵活多品种，每个品种独立配置）
+instruments:
+  IF:
+    name: "沪深300股指期货"
+    multiplier: 300         # 合约乘数
+    tick_size: 0.2          # 最小变动价位
+    margin_rate: 0.12       # 保证金率
+    # 近月/远月合约代码前缀（实际代码由系统自动拼接当前月份）
+    near_symbol: "IF2606"   # 当前近月合约（需定期更新或自动识别）
+    far_symbol: "IF2609"    # 当前远月/远季合约
+    # 分红预估（点数，从券商金工研报获取，每年更新）
+    # 数据来源: 国信证券《股指分红点位监控周报》(2026-04-22)
+    #           东方证券《分红对期指的影响》系列
+    # 格式: 日期(交割日) -> 累计分红预估（指数点）
+    #
+    # 2026年度分红特征:
+    #   - 截至4/22, 沪深300已实现股息率0.09%, 剩余1.81%
+    #   - 年化基差率(剔除分红): IH=+1.13%(升水), IF=-5.20%, IC=-4.03%, IM=-6.66%
+    #   - 历史分位点: IH=34%, IF=42%, IC=71%, IM=67% (越高贴水越深)
+    #   - 参考: 东方证券2025/07数据 IF2507=38.26pt, IH2507=40.84pt, IC2507=19.23pt, IM2507=17.88pt
+    dividend_schedule:
+      "2026-06-20": 38.0    # IF2606交割日前 (参考国信+东证预测, 4月底预案加速)
+      "2026-09-19": 45.0    # IF2609 (含中报后二次分红)
+      "2026-12-18": 20.0    # IF2612 (年报分红较少)
+    enabled: true
+
+  IH:
+    name: "上证50股指期货"
+    multiplier: 300
+    tick_size: 0.2
+    margin_rate: 0.12
+    near_symbol: "IH2606"
+    far_symbol: "IH2609"
+    dividend_schedule:
+      "2026-06-20": 30.0    # IH2606 (上证50股息率高, 2.44%剩余)
+      "2026-09-19": 38.0    # IH2609
+      "2026-12-18": 16.0    # IH2612
+    enabled: true
+
+  IC:
+    name: "中证500股指期货"
+    multiplier: 200
+    tick_size: 0.2
+    margin_rate: 0.12
+    near_symbol: "IC2606"
+    far_symbol: "IC2609"
+    dividend_schedule:
+      "2026-06-20": 14.0    # IC2606 (中证500, 1.06%剩余股息率)
+      "2026-09-19": 18.0    # IC2609
+      "2026-12-18": 8.0     # IC2612
+    enabled: true
+
+  IM:
+    name: "中证1000股指期货"
+    multiplier: 200
+    tick_size: 0.2
+    margin_rate: 0.12
+    near_symbol: "IM2606"
+    far_symbol: "IM2609"
+    dividend_schedule:
+      "2026-06-20": 10.0    # IM2606 (中证1000, 0.87%剩余股息率)
+      "2026-09-19": 13.0    # IM2609
+      "2026-12-18": 5.0     # IM2612
+    enabled: true           # 按需开启
+
+# 基差统计参数
+basis:
+  lookback_days: 60         # 历史基差统计窗口（交易日）
+  sigma_entry: 1.0          # 入场阈值：基差偏离超过 N sigma 触发
+  sigma_exit: 0.3           # 出场阈值：基差回归到 N sigma 内时考虑换回
+  min_annualized_spread: 0.5 # 最低年化基差率（%），低于此不换仓（成本保护）
+  use_dividend_adjusted: true  # 是否使用分红调整后的基差
+
+# 方向信号配置
+direction:
+  signal_source: "external"  # "external" | "ma" | "composite"
+  # 外部信号接口：从文件读取（你的择时策略输出到此文件）
+  external_signal_file: "C:/Users/wang/WorkBuddy/20260425111208/directional_calendar/signals/direction.json"
+  # 信号格式: {"IF": 1, "IH": 1, "IC": 0, "IM": -1, "timestamp": "2026-04-25T17:00:00"}
+  # 1=多头, -1=空头, 0=中性/不操作
+  signal_ttl_minutes: 60     # 外部信号有效期（分钟），超时视为中性
+
+  # 备用：内置均线方向（当 external 信号文件不存在时自动降级）
+  fallback_ma:
+    fast_period: 5
+    slow_period: 20
+    bar_type: "1d"           # 日线
+
+# 执行参数
+execution:
+  # SpreadTrading 双腿执行
+  spread_trading: true
+  # 单次换仓最大手数（防止大单冲击）
+  max_switch_volume: 10
+  # 换仓价格保护：偏离报价 N tick 才撤单重报
+  price_tolerance_ticks: 3
+  # 两腿执行间隔（毫秒）
+  leg_interval_ms: 200
+  # 换仓后锁定期（分钟），防止频繁反复换仓
+  rebalance_cooldown_min: 60
+
+# 风控参数
+risk:
+  max_drawdown_pct: 5.0       # 最大回撤（%），超过则强制平仓
+  max_loss_per_day: 50000     # 单日最大亏损（元）
+  max_position_per_instrument: 20  # 单品种最大持仓（手）
+  total_margin_limit: 2000000 # 总保证金上限（元）
+  # 临近交割自动换月
+  rollover_days_before_expiry: 5   # 交割前 N 日强制换月到下一合约
+
+# 日志
+logging:
+  level: "INFO"
+  log_dir: "C:/Users/wang/WorkBuddy/20260425111208/directional_calendar/logs"
+  trade_log: true
+  basis_log: true             # 记录每次基差快照

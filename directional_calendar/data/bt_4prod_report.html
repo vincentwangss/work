@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8">
+<title>Backtest Report V2</title>
+<style>
+body { font-family:-apple-system,"Segoe UI",sans-serif; margin:20px; background:#f8fafc; }
+.card { background:#fff; border-radius:8px; padding:24px; margin:16px 0; box-shadow:0 1px 3px rgba(0,0,0,.08); }
+h1,h2 { color:#1e293b; } table { width:100%; border-collapse:collapse; font-size:13px; }
+th,td { padding:8px 12px; text-align:left; border-bottom:1px solid #e2e8f0; }
+th { background:#f1f5f9; } .pos { color:#dc2626; } .neg { color:#16a34a; }
+.tag { display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:bold; }
+.tag-open { bg:#dbeafe; color:#1d4ed8; }
+.tag-switch { bg:#fef3c7; color:#d97706; }
+.tag-rollover { bg:#ede9fe; color:#7c3aed; }
+tag-product { bg:#fce7f3; color:#db2777; }
+.tag-close { bg:#f1f5f9; color:#475569; }
+</style></head>
+<body>
+<div class="card">
+<h1>Directional Calendar Spread - Backtest V2</h1>
+<p>Generated: 2026-04-25 20:37:58</p>
+<p>Features: <b>Rollover</b> | <b>Multi-Product Switch</b> | <b>Z-Score Basis</b></p>
+</div>
+
+<div class="card"><h2>Summary</h2><table><tr><td><b>Initial Capital</b></td><td>1,000,000 CNY</td></tr><tr><td><b>Final Equity</b></td><td>1,015,384.8057399996</td></tr><tr><td><b>Total Return</b></td><td>+1.54%</td></tr><tr><td><b>Trades</b></td><td>16</td></tr><tr><td><b>Commission</b></td><td>968</td></tr></table></div>
+
+<div class="card"><h2>Equity Curve</h2>
+<div id="eq_chart" style="width:100%; height:400px;"></div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+new Chart(document.getElementById('eq_chart'), {
+    type:'line',
+    data:{
+        labels:["04-20 14:06", "04-20 14:18", "04-20 14:30", "04-20 14:42", "04-20 14:54", "04-21 09:36", "04-21 09:48", "04-21 10:00", "04-21 10:12", "04-21 10:24", "04-21 10:36", "04-21 10:48", "04-21 11:00", "04-21 11:12", "04-21 11:24", "04-21 13:06", "04-21 13:18", "04-21 13:30", "04-21 13:42", "04-21 13:54", "04-21 14:06", "04-21 14:18", "04-21 14:30", "04-21 14:42", "04-21 14:54", "04-22 09:36", "04-22 09:48", "04-22 10:00", "04-22 10:12", "04-22 10:24", "04-22 10:36", "04-22 10:48", "04-22 11:00", "04-22 11:13", "04-22 11:25", "04-22 13:07", "04-22 13:19", "04-22 13:31", "04-22 13:43", "04-22 13:55", "04-22 14:07", "04-22 14:19", "04-22 14:31", "04-22 14:43", "04-22 14:55", "04-23 09:37", "04-23 09:49", "04-23 10:01", "04-23 10:13", "04-23 10:25", "04-23 10:37", "04-23 10:49", "04-23 11:01", "04-23 11:13", "04-23 11:25", "04-23 13:07", "04-23 13:19", "04-23 13:31", "04-23 13:43", "04-23 13:55", "04-23 14:07", "04-23 14:19", "04-23 14:31", "04-23 14:43", "04-23 14:55", "04-24 09:37", "04-24 09:49", "04-24 10:01", "04-24 10:13", "04-24 10:25", "04-24 10:37", "04-24 10:49", "04-24 11:01", "04-24 11:13", "04-24 11:25", "04-24 13:07", "04-24 13:19", "04-24 13:31", "04-24 13:43", "04-24 13:55", "04-24 14:07", "04-24 14:19", "04-24 14:31", "04-24 14:43", "04-24 14:55"],
+        datasets:[{
+            label:'Equity (CNY)',
+            data:[999783.47, 999783.47, 999783.47, 999783.47, 999783.47, 999783.47, 995395.56, 995395.56, 995395.56, 995395.56, 995395.56, 995395.56, 995395.56, 995395.56, 995395.56, 995395.56, 995395.56, 995395.56, 995395.56, 995395.56, 1002471.17, 1002166.79, 1002166.79, 1002166.79, 1002166.79, 1002162.39, 1004133.34, 1004133.34, 1001308.93, 1001308.93, 1002564.45, 1002564.45, 1002564.45, 1002564.45, 1002564.45, 1002564.45, 1002564.45, 1002564.45, 1010359.6, 1010359.6, 1008614.81, 1008614.81, 1008614.81, 1009989.94, 1009989.94, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81, 1015384.81],
+            borderColor:'#2563eb',
+            backgroundColor:'rgba(37,99,235,0.08)',
+            fill:true, tension:0.15, pointRadius:0
+        }]
+    },
+    options:{ responsive:true, plugins:{legend:{display:false}},
+        scales:{y:{ticks:{callback:v=>v.toLocaleString()+' CNY'}}}
+    }
+});
+</script></div>
+
+<div class="card"><h2>Trade Details (16 trades)</h2>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Time</th>
+      <th>Action</th>
+      <th>Product</th>
+      <th>From</th>
+      <th>To</th>
+      <th>Price_From</th>
+      <th>Price_To</th>
+      <th>PnL_CNY</th>
+      <th>Commission</th>
+      <th>Reason</th>
+      <th>Zscore</th>
+      <th>BasisRate</th>
+      <th>Equity</th>
+      <th>Position</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>2026-04-20 13:57</td>
+      <td>OPEN</td>
+      <td>IF</td>
+      <td>-</td>
+      <td>IF2606</td>
+      <td>0.0</td>
+      <td>4689.2</td>
+      <td>-32</td>
+      <td>32</td>
+      <td>Open IF LONG (signal=1)</td>
+      <td>1.25</td>
+      <td>-8.54%</td>
+      <td>999,968</td>
+      <td>IF/IF2606/NEAR</td>
+    </tr>
+    <tr>
+      <td>2026-04-20 13:58</td>
+      <td>SWITCH_TO_FAR</td>
+      <td>IF</td>
+      <td>IF2606</td>
+      <td>IF2609</td>
+      <td>4688.8</td>
+      <td>4612.0</td>
+      <td>-184</td>
+      <td>64</td>
+      <td>NEAR->FAR: z=1.05</td>
+      <td>1.05</td>
+      <td>-8.57%</td>
+      <td>999,783</td>
+      <td>IF/IF2609/FAR</td>
+    </tr>
+    <tr>
+      <td>2026-04-21 09:40</td>
+      <td>SWITCH_TO_NEAR</td>
+      <td>IF</td>
+      <td>IF2609</td>
+      <td>IF2606</td>
+      <td>4590.2</td>
+      <td>4669.0</td>
+      <td>-6,604</td>
+      <td>64</td>
+      <td>FAR->NEAR: z=-0.04</td>
+      <td>-0.04</td>
+      <td>-8.77%</td>
+      <td>993,180</td>
+      <td>IF/IF2606/NEAR</td>
+    </tr>
+    <tr>
+      <td>2026-04-21 09:46</td>
+      <td>SWITCH_TO_FAR</td>
+      <td>IF</td>
+      <td>IF2606</td>
+      <td>IF2609</td>
+      <td>4676.6</td>
+      <td>4602.2</td>
+      <td>+2,216</td>
+      <td>64</td>
+      <td>NEAR->FAR: z=2.09</td>
+      <td>2.09</td>
+      <td>-8.39%</td>
+      <td>995,396</td>
+      <td>IF/IF2609/FAR</td>
+    </tr>
+    <tr>
+      <td>2026-04-21 13:59</td>
+      <td>SWITCH_TO_NEAR</td>
+      <td>IF</td>
+      <td>IF2609</td>
+      <td>IF2606</td>
+      <td>4626.0</td>
+      <td>4704.8</td>
+      <td>+7,076</td>
+      <td>64</td>
+      <td>FAR->NEAR: z=0.24</td>
+      <td>0.24</td>
+      <td>-8.72%</td>
+      <td>1,002,471</td>
+      <td>IF/IF2606/NEAR</td>
+    </tr>
+    <tr>
+      <td>2026-04-21 14:11</td>
+      <td>SWITCH_TO_FAR</td>
+      <td>IF</td>
+      <td>IF2606</td>
+      <td>IF2609</td>
+      <td>4704.0</td>
+      <td>4627.0</td>
+      <td>-304</td>
+      <td>64</td>
+      <td>NEAR->FAR: z=1.08</td>
+      <td>1.08</td>
+      <td>-8.57%</td>
+      <td>1,002,167</td>
+      <td>IF/IF2609/FAR</td>
+    </tr>
+    <tr>
+      <td>2026-04-21 14:56</td>
+      <td>SWITCH_TO_NEAR</td>
+      <td>IF</td>
+      <td>IF2609</td>
+      <td>IF2606</td>
+      <td>4627.2</td>
+      <td>4706.0</td>
+      <td>-4</td>
+      <td>64</td>
+      <td>FAR->NEAR: z=0.25</td>
+      <td>0.25</td>
+      <td>-8.72%</td>
+      <td>1,002,162</td>
+      <td>IF/IF2606/NEAR</td>
+    </tr>
+    <tr>
+      <td>2026-04-22 09:40</td>
+      <td>SWITCH_TO_FAR</td>
+      <td>IF</td>
+      <td>IF2606</td>
+      <td>IF2609</td>
+      <td>4715.0</td>
+      <td>4637.8</td>
+      <td>+2,635</td>
+      <td>65</td>
+      <td>NEAR->FAR: z=1.07</td>
+      <td>1.07</td>
+      <td>-8.57%</td>
+      <td>1,004,798</td>
+      <td>IF/IF2609/FAR</td>
+    </tr>
+    <tr>
+      <td>2026-04-22 09:48</td>
+      <td>SWITCH_TO_NEAR</td>
+      <td>IF</td>
+      <td>IF2609</td>
+      <td>IF2606</td>
+      <td>4635.8</td>
+      <td>4714.8</td>
+      <td>-665</td>
+      <td>65</td>
+      <td>FAR->NEAR: z=0.22</td>
+      <td>0.22</td>
+      <td>-8.73%</td>
+      <td>1,004,133</td>
+      <td>IF/IF2606/NEAR</td>
+    </tr>
+    <tr>
+      <td>2026-04-22 10:07</td>
+      <td>SWITCH_TO_FAR</td>
+      <td>IF</td>
+      <td>IF2606</td>
+      <td>IF2609</td>
+      <td>4705.6</td>
+      <td>4628.6</td>
+      <td>-2,824</td>
+      <td>64</td>
+      <td>NEAR->FAR: z=1.09</td>
+      <td>1.09</td>
+      <td>-8.57%</td>
+      <td>1,001,309</td>
+      <td>IF/IF2609/FAR</td>
+    </tr>
+    <tr>
+      <td>2026-04-22 10:25</td>
+      <td>SWITCH_TO_NEAR</td>
+      <td>IF</td>
+      <td>IF2609</td>
+      <td>IF2606</td>
+      <td>4633.0</td>
+      <td>4712.0</td>
+      <td>+1,256</td>
+      <td>64</td>
+      <td>FAR->NEAR: z=0.20</td>
+      <td>0.20</td>
+      <td>-8.73%</td>
+      <td>1,002,564</td>
+      <td>IF/IF2606/NEAR</td>
+    </tr>
+    <tr>
+      <td>2026-04-22 13:35</td>
+      <td>SWITCH_TO_FAR</td>
+      <td>IF</td>
+      <td>IF2606</td>
+      <td>IF2609</td>
+      <td>4738.2</td>
+      <td>4660.6</td>
+      <td>+7,795</td>
+      <td>65</td>
+      <td>NEAR->FAR: z=1.06</td>
+      <td>1.06</td>
+      <td>-8.57%</td>
+      <td>1,010,360</td>
+      <td>IF/IF2609/FAR</td>
+    </tr>
+    <tr>
+      <td>2026-04-22 14:06</td>
+      <td>SWITCH_TO_NEAR</td>
+      <td>IF</td>
+      <td>IF2609</td>
+      <td>IF2606</td>
+      <td>4655.0</td>
+      <td>4734.6</td>
+      <td>-1,745</td>
+      <td>65</td>
+      <td>FAR->NEAR: z=0.10</td>
+      <td>0.10</td>
+      <td>-8.75%</td>
+      <td>1,008,615</td>
+      <td>IF/IF2606/NEAR</td>
+    </tr>
+    <tr>
+      <td>2026-04-22 14:43</td>
+      <td>SWITCH_TO_FAR</td>
+      <td>IF</td>
+      <td>IF2606</td>
+      <td>IF2609</td>
+      <td>4739.4</td>
+      <td>4662.0</td>
+      <td>+1,375</td>
+      <td>65</td>
+      <td>NEAR->FAR: z=1.16</td>
+      <td>1.16</td>
+      <td>-8.56%</td>
+      <td>1,009,990</td>
+      <td>IF/IF2609/FAR</td>
+    </tr>
+    <tr>
+      <td>2026-04-23 09:31</td>
+      <td>SWITCH_TO_NEAR</td>
+      <td>IF</td>
+      <td>IF2609</td>
+      <td>IF2606</td>
+      <td>4680.2</td>
+      <td>4759.8</td>
+      <td>+5,395</td>
+      <td>65</td>
+      <td>FAR->NEAR: z=0.30</td>
+      <td>0.30</td>
+      <td>-8.71%</td>
+      <td>1,015,385</td>
+      <td>IF/IF2606/NEAR</td>
+    </tr>
+    <tr>
+      <td>2026-04-24 15:00</td>
+      <td>CLOSE</td>
+      <td>IF</td>
+      <td>IF2606</td>
+      <td>-</td>
+      <td>4713.6</td>
+      <td>0.0</td>
+      <td>-13,893</td>
+      <td>33</td>
+      <td>SETTLE at end of data</td>
+      <td>0.40</td>
+      <td>-8.69%</td>
+      <td>1,001,492</td>
+      <td>-</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="card"><h2>Strategy Logic</h2>
+<ul>
+<li><b>Contract Rollover:</b> Auto-rollover 5 days before expiry</li>
+<li><b>Product Switch:</b> Based on direction signal strength x product beta</li>
+<li><b>Near/Far Switch:</b> Z-score > 1.0σ → Far | Z-score < 0.3σ → Near</li>
+<li><b>Cooldown:</b> 6 bars between switches</li>
+</ul>
+</div>
+
+</body></html>

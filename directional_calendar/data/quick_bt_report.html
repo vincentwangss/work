@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8">
+<title>Quick Backtest Report</title>
+<style>
+body { font-family:-apple-system,"Segoe UI",sans-serif; margin:20px; background:#f8fafc; }
+.card { background:#fff; border-radius:8px; padding:24px; margin:16px 0; box-shadow:0 1px 3px rgba(0,0,0,.08); }
+h1,h2 { color:#1e293b; } table { width:100%; border-collapse:collapse; font-size:13px; }
+th,td { padding:8px 12px; text-align:left; border-bottom:1px solid #e2e8f0; }
+th { background:#f1f5f9; } .pos { color:#dc2626; } .neg { color:#16a34a; }
+</style></head>
+<body>
+<div class="card">
+<h1>Quick Backtest - Directional Calendar Spread</h1>
+<p>Generated: 2026-04-25 18:58:31</p>
+<p>Signal: <b>ALWAYS LONG</b> | Dividend: <b>ZERO</b></p>
+</div>
+
+<div class="card"><h2>Summary</h2><table><tr><td><b>Initial Capital</b></td><td>1,000,000 CNY</td></tr><tr><td><b>Final Equity</b></td><td>1,069,557</td></tr><tr><td><b>Total Return</b></td><td>+6.96%</td></tr><tr><td><b>Trades</b></td><td>5</td></tr><tr><td><b>Commission</b></td><td>255</td></tr></table></div>
+
+<div class="card"><h2>Equity Curve</h2>
+<div id="eq_chart" style="width:100%; height:400px;"></div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+new Chart(document.getElementById('eq_chart'), {
+    type:'line',
+    data:{
+        labels:["03-25 13:50", "03-25 14:50", "03-26 10:20", "03-26 11:20", "03-26 13:50", "03-26 14:50", "03-27 10:20", "03-27 11:20", "03-27 13:50", "03-27 14:50", "03-30 10:20", "03-30 11:20", "03-30 13:50", "03-30 14:50", "03-31 10:20", "03-31 11:20", "03-31 13:50", "03-31 14:50", "04-01 10:20", "04-01 11:20", "04-01 13:50", "04-01 14:50", "04-02 10:20", "04-02 11:20", "04-02 13:50", "04-02 14:50", "04-03 10:20", "04-03 11:20", "04-03 13:50", "04-03 14:50", "04-07 10:20", "04-07 11:20", "04-07 13:50", "04-07 14:50", "04-08 10:20", "04-08 11:20", "04-08 13:50", "04-08 14:50", "04-09 10:20", "04-09 11:20", "04-09 13:50", "04-09 14:50", "04-10 10:20", "04-10 11:20", "04-10 13:50", "04-10 14:50", "04-13 10:20", "04-13 11:20", "04-13 13:50", "04-13 14:50", "04-14 10:20", "04-14 11:20", "04-14 13:50", "04-14 14:50", "04-15 10:20", "04-15 11:20", "04-15 13:50", "04-15 14:50", "04-16 10:20", "04-16 11:20", "04-16 13:50", "04-16 14:50", "04-17 10:20", "04-17 11:20", "04-17 13:50", "04-17 14:50", "04-20 10:20", "04-20 11:20", "04-20 13:50", "04-20 14:50", "04-21 10:20", "04-21 11:20", "04-21 13:50", "04-21 14:50", "04-22 10:20", "04-22 11:20", "04-22 13:50", "04-22 14:50", "04-23 10:20", "04-23 11:20", "04-23 13:50", "04-23 14:50", "04-24 10:20", "04-24 11:20", "04-24 13:50", "04-24 14:50"],
+        datasets:[{
+            label:'Equity (CNY)',
+            data:[999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 999969.25, 1052285.88, 1052285.88, 1052285.88, 1052285.88, 1052285.88, 1052285.88, 1052285.88, 1052285.88, 1052285.88, 1052285.88, 1052285.88, 1052285.88, 1052285.88, 1052285.88, 1052285.88, 1052285.88, 1052285.88, 1052285.88, 1052285.88, 1052285.88, 1052285.88, 1052285.88, 1075981.38, 1075981.38, 1075981.38, 1075981.38, 1069557.14, 1069557.14, 1069557.14],
+            borderColor:'#2563eb',
+            backgroundColor:'rgba(37,99,235,0.08)',
+            fill:true, tension:0.15, pointRadius:0
+        }]
+    },
+    options:{ responsive:true, plugins:{legend:{display:false}},
+        scales:{y:{ticks:{callback:v=>v.toLocaleString()+' CNY'}}}
+    }
+});
+</script></div>
+
+<div class="card"><h2>Trade Details (5 trades)</h2>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Time</th>
+      <th>Action</th>
+      <th>From</th>
+      <th>To</th>
+      <th>Price_From</th>
+      <th>Price_To</th>
+      <th>PnL_CNY</th>
+      <th>Commission</th>
+      <th>Reason</th>
+      <th>Zscore</th>
+      <th>BasisRate</th>
+      <th>Equity</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>2026-03-25 13:50</td>
+      <td>OPEN_NEAR</td>
+      <td>-</td>
+      <td>IF2606</td>
+      <td>0.0</td>
+      <td>4456.8</td>
+      <td>-31</td>
+      <td>31</td>
+      <td>Empty -> Open near long</td>
+      <td>-1.20</td>
+      <td>-9.78%</td>
+      <td>999,969</td>
+    </tr>
+    <tr>
+      <td>2026-04-15 14:05</td>
+      <td>SWITCH_TO_FAR</td>
+      <td>IF2606</td>
+      <td>IF2609</td>
+      <td>4631.4</td>
+      <td>4552.4</td>
+      <td>+52,317</td>
+      <td>63</td>
+      <td>NEAR->FAR: z=1.04 > +1.0</td>
+      <td>1.04</td>
+      <td>-8.85%</td>
+      <td>1,052,286</td>
+    </tr>
+    <tr>
+      <td>2026-04-23 11:00</td>
+      <td>SWITCH_TO_NEAR</td>
+      <td>IF2609</td>
+      <td>IF2606</td>
+      <td>4631.6</td>
+      <td>4716.2</td>
+      <td>+23,696</td>
+      <td>64</td>
+      <td>FAR->NEAR: z=0.19 < 0.3</td>
+      <td>0.19</td>
+      <td>-9.20%</td>
+      <td>1,075,981</td>
+    </tr>
+    <tr>
+      <td>2026-04-24 10:35</td>
+      <td>SWITCH_TO_FAR</td>
+      <td>IF2606</td>
+      <td>IF2609</td>
+      <td>4695.0</td>
+      <td>4615.2</td>
+      <td>-6,424</td>
+      <td>64</td>
+      <td>NEAR->FAR: z=1.10 > +1.0</td>
+      <td>1.10</td>
+      <td>-8.82%</td>
+      <td>1,069,557</td>
+    </tr>
+    <tr>
+      <td>2026-04-24 15:00</td>
+      <td>CLOSE</td>
+      <td>IF2609</td>
+      <td>-</td>
+      <td>4635.0</td>
+      <td>0.0</td>
+      <td>+5,908</td>
+      <td>32</td>
+      <td>SETTLE at end of data</td>
+      <td>1.41</td>
+      <td>-8.69%</td>
+      <td>1,075,465</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="card"><h2>Note</h2>
+<p>This backtest uses pre-computed mu/sigma from the full sample (in-sample).
+For robust results, use walk-forward validation or out-of-sample testing.</p>
+<p>The strategy logic: always long. When holding near-month contract and the 
+annualized basis rate Z-score exceeds +1.0, switch to far-month contract.
+Switch back when Z-score falls below 0.3.</p>
+</div>
+
+</body></html>

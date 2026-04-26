@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8">
+<title>基差套利参数优化报告</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+margin:16px;background:#f8fafc;}
+.card{background:white;border-radius:12px;padding:24px;margin:16px 0;
+box-shadow:0 2px 12px rgba(0,0,0,.06);}
+h1{color:#0f172a;text-align:center;font-size:24px;}
+h2{color:#1e293b;border-bottom:2px solid #e2e8f0;padding-bottom:8px;}
+.subtitle{text-align:center;color:#64748b;margin-bottom:24px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{background:#1e293b;color:white;padding:10px 8px;text-align:center;font-weight:600;}
+td{padding:8px;border-bottom:1px solid #f1f5f9;text-align:center;}
+tr:hover{background:#f8fafc;}
+.row-top3{background:#fefce8 !important;font-weight:600;}
+.positive{color:#dc2626;font-weight:600;}
+.negative{color:#16a34a;font-weight:600;}
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+gap:12px;margin:20px 0;}
+.metric-card{background:linear-gradient(135deg,#2563eb,#7c3aed);color:white;
+border-radius:12px;padding:18px;text-align:center;}
+.metric-card.neg{background:linear-gradient(135deg,#dc2626,#991b1b);}
+.metric-val{font-size:32px;font-weight:700;}
+.metric-label{font-size:12px;opacity:0.85;margin-top:4px;}
+.prod-mini{padding:8px;background:#f1f5f9;border-radius:6px;margin:4px 0;font-size:13px;}
+.best-box{background:#eff6ff;border-left:4px solid #2563eb;padding:16px;
+border-radius:0 8px 8px 0;margin:16px 0;}
+.param-tag{display:inline-block;background:#dbeafe;color:#1e40af;
+padding:2px 10px;border-radius:4px;font-size:13px;margin:2px;font-weight:600;}
+.chart-row{display:flex;gap:16px;flex-wrap:wrap;}
+.chart-container{flex:1;min-width:400px;height:350px;}
+.section-title{font-size:14px;color:#475569;margin:12px 0 8px;font-weight:600;}
+</style></head>
+<body>
+
+<div class="card">
+<h1>基差套利参数优化报告</h1>
+<p class="subtitle">
+2026-04-26 16:47 |
+品种: IF, IM |
+有效组合: 144 组 |
+数据: ccfx 5min (~9个月) |
+<span style="color:#dc2626;">红色=盈利/好 | 绿色=亏损/坏</span>
+</p>
+</div>
+
+<!-- 最佳参数 -->
+<div class="card best-box">
+<h2>TOP-1 最优参数组合 (Score=48.5/100)</h2>
+<div class="summary-grid">
+<div class="metric-card"><div class="metric-val">z=1.25</div><div class="metric-label">入场阈值</div></div>
+<div class="metric-card"><div class="metric-val">TP=2.5pt</div><div class="metric-label">止盈点数</div></div>
+<div class="metric-card"><div class="metric-val">SL=10.0pt</div><div class="metric-label">止损点数</div></div>
+<div class="metric-card"><div class="metric-val">T=288bars</div><div class="metric-label">时间止损(K线)</div></div>
+<div class="metric-card"><div class="metric-val">+30.46万</div><div class="metric-label">总盈亏</div></div>
+<div class="metric-card "><div class="metric-val">+42.4%</div><div class="metric-label">年化收益</div></div>
+<div class="metric-card"><div class="metric-val">0.17</div><div class="metric-label">Sharpe</div></div>
+<div class="metric-card neg"><div class="metric-val">-12.58%</div><div class="metric-label">最大回撤</div></div>
+<div class="metric-card"><div class="metric-val">85.6%</div><div class="metric-label">胜率</div></div>
+<div class="metric-card"><div class="metric-val">2.13</div><div class="metric-label">盈亏比</div></div>
+<div class="metric-card"><div class="metric-val">661</div><div class="metric-label">总交易笔数</div></div>
+<div class="metric-card"><div class="metric-val">1.1h</div><div class="metric-label">平均持仓</div></div>
+</div>
+
+<h3 class="section-title">各品种表现</h3>
+<div class="prod-mini">
+<strong style="color:#dc2626">IF</strong>: 
+236笔 | +17.88% | DD=-2.71% | Sh=0.65 | PnL=+128,412元
+</div>
+<div class="prod-mini">
+<strong style="color:#7c3aed">IM</strong>: 
+425笔 | +24.54% | DD=-2.73% | Sh=0.76 | PnL=+176,152元
+</div>
+
+</div>
+
+<!-- 排名表格 -->
+<div class="card">
+<h2>参数排名 TOP-50</h2>
+<table>
+<tr><th>Rank</th><th>Score</th><th>Z_entry</th><th>TP(pt)</th><th>SL(pt)</th>
+<th>Time(bars)</th><th>PnL(万)</th><th>Trades</th><th>WinRate</th>
+<th>Sharpe</th><th>MaxDD%</th><th>AnnRet%</th><th>P/F</th><th>AvgHold</th>
+</tr>
+<tr class="row-top3">
+<td>1</td>
+<td>48.5</td>
+<td>1.25</td>
+<td>2.5</td>
+<td>10.0</td>
+<td>288</td>
+<td class="positive">+30.46</td>
+<td>661</td>
+<td>85.6%</td>
+<td>0.17</td>
+<td class="negative">-12.58%</td>
+<td class="positive">+42.4%</td>
+<td>2.13</td>
+<td>1.1h</td>
+</tr>
+<tr class="row-top3">
+<td>2</td>
+<td>48.5</td>
+<td>1.25</td>
+<td>2.5</td>
+<td>10.0</td>
+<td>432</td>
+<td class="positive">+30.46</td>
+<td>661</td>
+<td>85.6%</td>
+<td>0.17</td>
+<td class="negative">-12.58%</td>
+<td class="positive">+42.4%</td>
+<td>2.13</td>
+<td>1.1h</td>
+</tr>
+<tr class="row-top3">
+<td>3</td>
+<td>48.5</td>
+<td>1.25</td>
+<td>2.5</td>
+<td>10.0</td>
+<td>144</td>
+<td class="positive">+30.56</td>
+<td>666</td>
+<td>85.4%</td>
+<td>0.16</td>
+<td class="negative">-12.66%</td>
+<td class="positive">+42.5%</td>
+<td>2.12</td>
+<td>1.1h</td>
+</tr>
+<tr class="">
+<td>4</td>
+<td>48.1</td>
+<td>1.50</td>
+<td>2.5</td>
+<td>10.0</td>
+<td>288</td>
+<td class="positive">+29.47</td>
+<td>557</td>
+<td>85.8%</td>
+<td>0.15</td>
+<td class="negative">-12.33%</td>
+<td class="positive">+41.0%</td>
+<td>2.25</td>
+<td>1.0h</td>
+</tr>
+<tr class="">
+<td>5</td>
+<td>48.1</td>
+<td>1.50</td>
+<td>2.5</td>
+<td>10.0</td>
+<td>432</td>
+<td class="positive">+29.47</td>
+<td>557</td>
+<td>85.8%</td>
+<td>0.15</td>
+<td class="negative">-12.33%</td>
+<td class="positive">+41.0%</td>
+<td>2.25</td>
+<td>1.0h</td>
+</tr>
+<tr class="">
+<td>6</td>
+<td>48.1</td>
+<td>1.50</td>
+<td>2.5</td>
+<td>10.0</td>
+<td>144</td>
+<td class="positive">+29.52</td>
+<td>559</td>
+<td>85.7%</td>
+<td>0.15</td>
+<td class="negative">-12.37%</td>
+<td class="positive">+41.1%</td>
+<td>2.25</td>
+<td>1.0h</td>
+</tr>
+<tr class="">
+<td>7</td>
+<td>47.8</td>
+<td>2.00</td>
+<td>2.5</td>
+<td>10.0</td>
+<td>288</td>
+<td class="positive">+27.15</td>
+<td>366</td>
+<td>86.1%</td>
+<td>0.14</td>
+<td class="negative">-11.08%</td>
+<td class="positive">+37.8%</td>
+<td>2.75</td>
+<td>0.9h</td>
+</tr>
+<tr class="">
+<td>8</td>
+<td>47.8</td>
+<td>2.00</td>
+<td>2.5</td>
+<td>10.0</td>
+<td>432</td>
+<td class="positive">+27.15</td>
+<td>366</td>
+<td>86.1%</td>
+<td>0.14</td>
+<td class="negative">-11.08%</td>
+<td class="positive">+37.8%</td>
+<td>2.75</td>
+<td>0.9h</td>
+</tr>
+<tr class="">
+<td>9</td>
+<td>47.7</td>
+<td>2.00</td>
+<td>2.5</td>
+<td>10.0</td>
+<td>144</td>
+<td class="positive">+27.15</td>
+<td>367</td>
+<td>85.8%</td>
+<td>0.14</td>
+<td class="negative">-11.08%</td>
+<td class="positive">+37.8%</td>
+<td>2.74</td>
+<td>0.9h</td>
+</tr>
+<tr class="">
+<td>10</td>
+<td>47.5</td>
+<td>1.25</td>
+<td>3.0</td>
+<td>10.0</td>
+<td>288</td>
+<td class="positive">+29.54</td>
+<td>610</td>
+<td>84.1%</td>
+<td>0.15</td>
+<td class="negative">-13.05%</td>
+<td class="positive">+41.1%</td>
+<td>2.07</td>
+<td>1.2h</td>
+</tr>
+<tr class="">
+<td>11</td>
+<td>47.5</td>
+<td>1.25</td>
+<td>3.0</td>
+<td>10.0</td>
+<td>432</td>
+<td class="positive">+29.54</td>
+<td>610</td>
+<td>84.1%</td>
+<td>0.15</td>
+<td class="negative">-13.05%</td>
+<td class="positive">+41.1%</td>
+<td>2.07</td>
+<td>1.2h</td>
+</tr>
+<tr class="">
+<td>12</td>
+<td>47.4</td>
+<td>1.25</td>
+<td>3.0</td>
+<td>10.0</td>
+<td>144</td>
+<td class="positive">+29.53</td>
+<td>613</td>
+<td>83.8%</td>
+<td>0.15</td>
+<td class="negative">-13.03%</td>
+<td class="positive">+41.1%</td>
+<td>2.06</td>
+<td>1.2h</td>
+</tr>
+<tr class="">
+<td>13</td>
+<td>47.2</td>
+<td>1.50</td>
+<td>3.0</td>
+<td>10.0</td>
+<td>288</td>
+<td class="positive">+28.87</td>
+<td>500</td>
+<td>83.8%</td>
+<td>0.14</td>
+<td class="negative">-12.93%</td>
+<td class="positive">+40.2%</td>
+<td>2.19</td>
+<td>1.2h</td>
+</tr>
+<tr class="">
+<td>14</td>
+<td>47.2</td>
+<td>1.50</td>
+<td>3.0</td>
+<td>10.0</td>
+<td>432</td>
+<td class="positive">+28.87</td>
+<td>500</td>
+<td>83.8%</td>
+<td>0.14</td>
+<td class="negative">-12.93%</td>
+<td class="positive">+40.2%</td>
+<td>2.19</td>
+<td>1.2h</td>
+</tr>
+<tr class="">
+<td>15</td>
+<td>47.2</td>
+<td>1.50</td>
+<td>3.0</td>
+<td>10.0</td>
+<td>144</td>
+<td class="positive">+28.92</td>
+<td>502</td>
+<td>83.7%</td>
+<td>0.14</td>
+<td class="negative">-12.96%</td>
+<td class="positive">+40.3%</td>
+<td>2.19</td>
+<td>1.2h</td>
+</tr>
+<tr class="">
+<td>16</td>
+<td>46.9</td>
+<td>1.50</td>
+<td>2.5</td>
+<td>8.0</td>
+<td>288</td>
+<td class="positive">+28.80</td>
+<td>610</td>
+<td>83.1%</td>
+<td>0.15</td>
+<td class="negative">-11.58%</td>
+<td class="positive">+40.1%</td>
+<td>2.09</td>
+<td>0.9h</td>
+</tr>
+<tr class="">
+<td>17</td>
+<td>46.9</td>
+<td>1.50</td>
+<td>2.5</td>
+<td>8.0</td>
+<td>432</td>
+<td class="positive">+28.80</td>
+<td>610</td>
+<td>83.1%</td>
+<td>0.15</td>
+<td class="negative">-11.58%</td>
+<td class="positive">+40.1%</td>
+<td>2.09</td>
+<td>0.9h</td>
+</tr>
+<tr class="">
+<td>18</td>
+<td>46.9</td>
+<td>1.25</td>
+<td>2.5</td>
+<td>8.0</td>
+<td>288</td>
+<td class="positive">+29.17</td>
+<td>729</td>
+<td>83.1%</td>
+<td>0.16</td>
+<td class="negative">-12.56%</td>
+<td class="positive">+40.6%</td>
+<td>1.93</td>
+<td>1.0h</td>
+</tr>
+<tr class="">
+<td>19</td>
+<td>46.9</td>
+<td>1.25</td>
+<td>2.5</td>
+<td>8.0</td>
+<td>432</td>
+<td class="positive">+29.17</td>
+<td>729</td>
+<td>83.1%</td>
+<td>0.16</td>
+<td class="negative">-12.56%</td>
+<td class="positive">+40.6%</td>
+<td>1.93</td>
+<td>1.0h</td>
+</tr>
+<tr class="">
+<td>20</td>
+<td>46.9</td>
+<td>1.25</td>
+<td>2.5</td>
+<td>8.0</td>
+<td>144</td>
+<td class="positive">+29.27</td>
+<td>734</td>
+<td>83.0%</td>
+<td>0.15</td>
+<td class="negative">-12.64%</td>
+<td class="positive">+40.8%</td>
+<td>1.92</td>
+<td>0.9h</td>
+</tr>
+<tr class="">
+<td>21</td>
+<td>46.9</td>
+<td>1.50</td>
+<td>2.5</td>
+<td>8.0</td>
+<td>144</td>
+<td class="positive">+28.85</td>
+<td>612</td>
+<td>83.0%</td>
+<td>0.15</td>
+<td class="negative">-11.62%</td>
+<td class="positive">+40.2%</td>
+<td>2.09</td>
+<td>0.9h</td>
+</tr>
+<tr class="">
+<td>22</td>
+<td>46.7</td>
+<td>1.75</td>
+<td>2.5</td>
+<td>10.0</td>
+<td>288</td>
+<td class="positive">+26.83</td>
+<td>462</td>
+<td>85.3%</td>
+<td>0.13</td>
+<td class="negative">-11.32%</td>
+<td class="positive">+37.4%</td>
+<td>2.30</td>
+<td>1.0h</td>
+</tr>
+<tr class="">
+<td>23</td>
+<td>46.7</td>
+<td>1.75</td>
+<td>2.5</td>
+<td>10.0</td>
+<td>432</td>
+<td class="positive">+26.83</td>
+<td>462</td>
+<td>85.3%</td>
+<td>0.13</td>
+<td class="negative">-11.32%</td>
+<td class="positive">+37.4%</td>
+<td>2.30</td>
+<td>1.0h</td>
+</tr>
+<tr class="">
+<td>24</td>
+<td>46.7</td>
+<td>1.75</td>
+<td>2.5</td>
+<td>10.0</td>
+<td>144</td>
+<td class="positive">+26.87</td>
+<td>465</td>
+<td>85.2%</td>
+<td>0.13</td>
+<td class="negative">-11.35%</td>
+<td class="positive">+37.4%</td>
+<td>2.29</td>
+<td>0.9h</td>
+</tr>
+<tr class="">
+<td>25</td>
+<td>46.2</td>
+<td>2.00</td>
+<td>3.0</td>
+<td>10.0</td>
+<td>288</td>
+<td class="positive">+25.66</td>
+<td>338</td>
+<td>83.7%</td>
+<td>0.14</td>
+<td class="negative">-11.18%</td>
+<td class="positive">+35.7%</td>
+<td>2.56</td>
+<td>1.0h</td>
+</tr>
+<tr class="">
+<td>26</td>
+<td>46.2</td>
+<td>2.00</td>
+<td>3.0</td>
+<td>10.0</td>
+<td>432</td>
+<td class="positive">+25.66</td>
+<td>338</td>
+<td>83.7%</td>
+<td>0.14</td>
+<td class="negative">-11.18%</td>
+<td class="positive">+35.7%</td>
+<td>2.56</td>
+<td>1.0h</td>
+</tr>
+<tr class="">
+<td>27</td>
+<td>46.2</td>
+<td>1.25</td>
+<td>3.0</td>
+<td>8.0</td>
+<td>288</td>
+<td class="positive">+28.54</td>
+<td>670</td>
+<td>81.5%</td>
+<td>0.15</td>
+<td class="negative">-12.07%</td>
+<td class="positive">+39.7%</td>
+<td>1.90</td>
+<td>1.1h</td>
+</tr>
+<tr class="">
+<td>28</td>
+<td>46.2</td>
+<td>1.25</td>
+<td>3.0</td>
+<td>8.0</td>
+<td>432</td>
+<td class="positive">+28.54</td>
+<td>670</td>
+<td>81.5%</td>
+<td>0.15</td>
+<td class="negative">-12.07%</td>
+<td class="positive">+39.7%</td>
+<td>1.90</td>
+<td>1.1h</td>
+</tr>
+<tr class="">
+<td>29</td>
+<td>46.1</td>
+<td>1.25</td>
+<td>3.0</td>
+<td>8.0</td>
+<td>144</td>
+<td class="positive">+28.53</td>
+<td>673</td>
+<td>81.3%</td>
+<td>0.15</td>
+<td class="negative">-12.06%</td>
+<td class="positive">+39.7%</td>
+<td>1.89</td>
+<td>1.1h</td>
+</tr>
+<tr class="">
+<td>30</td>
+<td>46.1</td>
+<td>1.50</td>
+<td>4.0</td>
+<td>10.0</td>
+<td>288</td>
+<td class="positive">+27.63</td>
+<td>442</td>
+<td>81.4%</td>
+<td>0.15</td>
+<td class="negative">-12.05%</td>
+<td class="positive">+38.5%</td>
+<td>2.14</td>
+<td>1.4h</td>
+</tr>
+<tr class="">
+<td>31</td>
+<td>46.1</td>
+<td>1.50</td>
+<td>4.0</td>
+<td>10.0</td>
+<td>432</td>
+<td class="positive">+27.63</td>
+<td>442</td>
+<td>81.4%</td>
+<td>0.15</td>
+<td class="negative">-12.05%</td>
+<td class="positive">+38.5%</td>
+<td>2.14</td>
+<td>1.4h</td>
+</tr>
+<tr class="">
+<td>32</td>
+<td>46.1</td>
+<td>1.50</td>
+<td>4.0</td>
+<td>10.0</td>
+<td>144</td>
+<td class="positive">+27.68</td>
+<td>444</td>
+<td>81.3%</td>
+<td>0.15</td>
+<td class="negative">-12.08%</td>
+<td class="positive">+38.5%</td>
+<td>2.14</td>
+<td>1.4h</td>
+</tr>
+<tr class="">
+<td>33</td>
+<td>46.0</td>
+<td>2.00</td>
+<td>3.0</td>
+<td>10.0</td>
+<td>144</td>
+<td class="positive">+25.60</td>
+<td>339</td>
+<td>83.2%</td>
+<td>0.14</td>
+<td class="negative">-11.13%</td>
+<td class="positive">+35.6%</td>
+<td>2.55</td>
+<td>1.0h</td>
+</tr>
+<tr class="">
+<td>34</td>
+<td>45.9</td>
+<td>1.25</td>
+<td>4.0</td>
+<td>10.0</td>
+<td>288</td>
+<td class="positive">+27.74</td>
+<td>545</td>
+<td>81.5%</td>
+<td>0.15</td>
+<td class="negative">-12.60%</td>
+<td class="positive">+38.6%</td>
+<td>1.96</td>
+<td>1.4h</td>
+</tr>
+<tr class="">
+<td>35</td>
+<td>45.9</td>
+<td>1.25</td>
+<td>4.0</td>
+<td>10.0</td>
+<td>432</td>
+<td class="positive">+27.74</td>
+<td>545</td>
+<td>81.5%</td>
+<td>0.15</td>
+<td class="negative">-12.60%</td>
+<td class="positive">+38.6%</td>
+<td>1.96</td>
+<td>1.4h</td>
+</tr>
+<tr class="">
+<td>36</td>
+<td>45.9</td>
+<td>1.50</td>
+<td>3.0</td>
+<td>8.0</td>
+<td>288</td>
+<td class="positive">+27.79</td>
+<td>551</td>
+<td>80.9%</td>
+<td>0.15</td>
+<td class="negative">-12.12%</td>
+<td class="positive">+38.7%</td>
+<td>2.03</td>
+<td>1.1h</td>
+</tr>
+<tr class="">
+<td>37</td>
+<td>45.9</td>
+<td>1.50</td>
+<td>3.0</td>
+<td>8.0</td>
+<td>432</td>
+<td class="positive">+27.79</td>
+<td>551</td>
+<td>80.9%</td>
+<td>0.15</td>
+<td class="negative">-12.12%</td>
+<td class="positive">+38.7%</td>
+<td>2.03</td>
+<td>1.1h</td>
+</tr>
+<tr class="">
+<td>38</td>
+<td>45.8</td>
+<td>2.00</td>
+<td>4.0</td>
+<td>10.0</td>
+<td>288</td>
+<td class="positive">+25.77</td>
+<td>298</td>
+<td>81.5%</td>
+<td>0.15</td>
+<td class="negative">-10.74%</td>
+<td class="positive">+35.9%</td>
+<td>2.59</td>
+<td>1.3h</td>
+</tr>
+<tr class="">
+<td>39</td>
+<td>45.8</td>
+<td>2.00</td>
+<td>4.0</td>
+<td>10.0</td>
+<td>432</td>
+<td class="positive">+25.77</td>
+<td>298</td>
+<td>81.5%</td>
+<td>0.15</td>
+<td class="negative">-10.74%</td>
+<td class="positive">+35.9%</td>
+<td>2.59</td>
+<td>1.3h</td>
+</tr>
+<tr class="">
+<td>40</td>
+<td>45.8</td>
+<td>1.50</td>
+<td>3.0</td>
+<td>8.0</td>
+<td>144</td>
+<td class="positive">+27.84</td>
+<td>553</td>
+<td>80.8%</td>
+<td>0.15</td>
+<td class="negative">-12.15%</td>
+<td class="positive">+38.8%</td>
+<td>2.02</td>
+<td>1.0h</td>
+</tr>
+<tr class="">
+<td>41</td>
+<td>45.8</td>
+<td>1.75</td>
+<td>3.0</td>
+<td>10.0</td>
+<td>288</td>
+<td class="positive">+26.13</td>
+<td>425</td>
+<td>83.3%</td>
+<td>0.13</td>
+<td class="negative">-11.38%</td>
+<td class="positive">+36.4%</td>
+<td>2.24</td>
+<td>1.1h</td>
+</tr>
+<tr class="">
+<td>42</td>
+<td>45.8</td>
+<td>1.75</td>
+<td>3.0</td>
+<td>10.0</td>
+<td>432</td>
+<td class="positive">+26.13</td>
+<td>425</td>
+<td>83.3%</td>
+<td>0.13</td>
+<td class="negative">-11.38%</td>
+<td class="positive">+36.4%</td>
+<td>2.24</td>
+<td>1.1h</td>
+</tr>
+<tr class="">
+<td>43</td>
+<td>45.8</td>
+<td>1.25</td>
+<td>4.0</td>
+<td>10.0</td>
+<td>144</td>
+<td class="positive">+27.69</td>
+<td>549</td>
+<td>81.1%</td>
+<td>0.15</td>
+<td class="negative">-12.56%</td>
+<td class="positive">+38.5%</td>
+<td>1.95</td>
+<td>1.4h</td>
+</tr>
+<tr class="">
+<td>44</td>
+<td>45.7</td>
+<td>1.75</td>
+<td>3.0</td>
+<td>10.0</td>
+<td>144</td>
+<td class="positive">+26.11</td>
+<td>427</td>
+<td>83.1%</td>
+<td>0.13</td>
+<td class="negative">-11.37%</td>
+<td class="positive">+36.3%</td>
+<td>2.23</td>
+<td>1.1h</td>
+</tr>
+<tr class="">
+<td>45</td>
+<td>45.7</td>
+<td>2.00</td>
+<td>4.0</td>
+<td>10.0</td>
+<td>144</td>
+<td class="positive">+25.74</td>
+<td>299</td>
+<td>80.9%</td>
+<td>0.15</td>
+<td class="negative">-10.72%</td>
+<td class="positive">+35.8%</td>
+<td>2.58</td>
+<td>1.3h</td>
+</tr>
+<tr class="">
+<td>46</td>
+<td>45.6</td>
+<td>1.75</td>
+<td>2.5</td>
+<td>8.0</td>
+<td>288</td>
+<td class="positive">+25.97</td>
+<td>484</td>
+<td>83.1%</td>
+<td>0.13</td>
+<td class="negative">-10.98%</td>
+<td class="positive">+36.2%</td>
+<td>2.18</td>
+<td>0.9h</td>
+</tr>
+<tr class="">
+<td>47</td>
+<td>45.6</td>
+<td>1.75</td>
+<td>2.5</td>
+<td>8.0</td>
+<td>432</td>
+<td class="positive">+25.97</td>
+<td>484</td>
+<td>83.1%</td>
+<td>0.13</td>
+<td class="negative">-10.98%</td>
+<td class="positive">+36.2%</td>
+<td>2.18</td>
+<td>0.9h</td>
+</tr>
+<tr class="">
+<td>48</td>
+<td>45.6</td>
+<td>1.75</td>
+<td>2.5</td>
+<td>8.0</td>
+<td>144</td>
+<td class="positive">+26.01</td>
+<td>487</td>
+<td>83.0%</td>
+<td>0.13</td>
+<td class="negative">-11.01%</td>
+<td class="positive">+36.2%</td>
+<td>2.17</td>
+<td>0.9h</td>
+</tr>
+<tr class="">
+<td>49</td>
+<td>45.3</td>
+<td>2.00</td>
+<td>2.5</td>
+<td>8.0</td>
+<td>288</td>
+<td class="positive">+23.77</td>
+<td>384</td>
+<td>83.9%</td>
+<td>0.16</td>
+<td class="negative">-9.30%</td>
+<td class="positive">+33.1%</td>
+<td>2.30</td>
+<td>0.8h</td>
+</tr>
+<tr class="">
+<td>50</td>
+<td>45.3</td>
+<td>2.00</td>
+<td>2.5</td>
+<td>8.0</td>
+<td>432</td>
+<td class="positive">+23.77</td>
+<td>384</td>
+<td>83.9%</td>
+<td>0.16</td>
+<td class="negative">-9.30%</td>
+<td class="positive">+33.1%</td>
+<td>2.30</td>
+<td>0.8h</td>
+</tr>
+
+</table>
+</div>
+
+<!-- 图表区域 -->
+<div class="card chart-row">
+<div class="chart-container"><canvas id="chart_score_dist"></canvas></div>
+<div class="chart-container"><canvas id="chart_scatter"></canvas></div>
+</div>
+<div class="card chart-row">
+<div class="chart-container"><canvas id="chart_heatmap"></canvas></div>
+</div>
+
+
+<script>
+// Score 分布直方图
+const scores = [48.4818207407915, 48.4818207407915, 48.455642414145686, 48.08925014938977, 48.08925014938977, 48.06504213276777, 47.76719118986695, 47.76719118986695, 47.69946001915305, 47.48964172073883, 47.48964172073883, 47.40561637314953, 47.20830724769116, 47.20830724769116, 47.183307003744254, 46.92901061971899, 46.92901061971899, 46.92788839483759, 46.92788839483759, 46.91559159565169, 46.91176963134406, 46.734832686377594, 46.734832686377594, 46.705079119489085, 46.20410240210278, 46.20410240210278, 46.191364758748094, 46.191364758748094, 46.12047353982389, 46.116723357976134, 46.116723357976134, 46.089846514685306, 46.03145269919655, 45.904926646231914, 45.904926646231914, 45.86243287452403, 45.86243287452403, 45.84847185172844, 45.84847185172844, 45.844812072106066, 45.77904852378168, 45.77904852378168, 45.76025015247771, 45.71701000986247, 45.673550111238164, 45.641977019544385, 45.641977019544385, 45.619291284390926, 45.30641578911789, 45.30641578911789, 45.24954428322676, 45.24954428322676, 45.24624748864307, 45.23604139472801, 45.23604139472801, 45.123080537100755, 44.93505833682838, 44.74011867468654, 44.74011867468654, 44.73165830843146, 44.580001565706304, 44.580001565706304, 44.56208729343337, 44.56208729343337, 44.543798633796065, 44.543798633796065, 44.54315229829885, 44.48938228941883, 44.40578391825643, 44.40578391825643, 44.3963649052775, 44.2549717794091, 44.09631133345717, 44.09631133345717, 43.939126802970456, 43.892662891059274, 43.892662891059274, 43.853415076303015, 43.84988272656699, 43.84988272656699, 43.71707916627737, 43.693890195123174, 43.693890195123174, 43.65318957579565, 43.65318957579565, 43.64230911627819, 43.52506099875679, 43.52506099875679, 43.514738470988334, 43.49287684994839, 43.41906230098492, 43.41906230098492, 43.40278985609287, 43.39836202487702, 43.39836202487702, 43.39321905640162, 43.39321905640162, 43.35889394271485, 43.338611173397155, 43.338611173397155, 43.330489026551255, 43.14938209216382, 42.62800051731428, 42.62800051731428, 42.61956589577256, 42.61524558197983, 42.61524558197983, 42.505353267590785, 42.505353267590785, 42.49609620842351, 42.45633336361763, 42.45633336361763, 42.44493056495608, 42.41344468887851, 42.394642883657916, 42.394642883657916, 42.37158414495975, 42.37158414495975, 42.362466534626236, 42.25468933969678, 42.054492327093556, 42.054492327093556, 41.98214747998489, 41.98214747998489, 41.95144905550398, 41.91539862437701, 41.60767160814287, 41.60767160814287, 41.57614544655947, 41.07311842947114, 41.07311842947114, 41.06462507461472, 40.82042764472106, 40.82042764472106, 40.812554485878, 40.67301510281888, 40.67301510281888, 40.52366043420055, 40.458255180798126, 40.458255180798126, 40.438402575717205, 39.84577669424153, 39.84577669424153, 39.82665488430085];
+const histCtx = document.getElementById('chart_score_dist').getContext('2d');
+new Chart(histCtx, {
+    type: 'bar',
+    data: {
+        labels: scores.map((_,i) => i+1),
+        datasets: [{
+            label: '综合评分',
+            data: scores,
+            backgroundColor: scores.map(s => s >= 60 ? '#2563eb' : s >= 40 ? '#f59e0b' : '#ef4444'),
+            borderRadius: 2,
+        }]
+    },
+    options: { responsive:true, plugins:{legend:{display:false},
+        title:{display:true,text:'参数组合评分分布 (TOP-" + str(top_n) + ")'}},
+        scales:{y:{beginAtZero:true,title:{display:true,text:'Score'}}}} }
+});
+
+// 散点图: Sharpe vs AnnRet
+const scatterData = [{"x": 0.16501445722585015, "y": 42.401538120511574, "score": 48.4818207407915, "z": 1.25}, {"x": 0.16501445722585015, "y": 42.401538120511574, "score": 48.4818207407915, "z": 1.25}, {"x": 0.1639173478068447, "y": 42.547928478097, "score": 48.455642414145686, "z": 1.25}, {"x": 0.1475764034987269, "y": 41.03550469030324, "score": 48.08925014938977, "z": 1.5}, {"x": 0.1475764034987269, "y": 41.03550469030324, "score": 48.08925014938977, "z": 1.5}, {"x": 0.14714817760853097, "y": 41.10103660105226, "score": 48.06504213276777, "z": 1.5}, {"x": 0.14384003221936648, "y": 37.80256584485426, "score": 47.76719118986695, "z": 2.0}, {"x": 0.14384003221936648, "y": 37.80256584485426, "score": 47.76719118986695, "z": 2.0}, {"x": 0.14385763582329603, "y": 37.801953746946864, "score": 47.69946001915305, "z": 2.0}, {"x": 0.15164747336609607, "y": 41.1295974308035, "score": 47.48964172073883, "z": 1.25}, {"x": 0.15164747336609607, "y": 41.1295974308035, "score": 47.48964172073883, "z": 1.25}, {"x": 0.15179629464282923, "y": 41.11019112549906, "score": 47.40561637314953, "z": 1.25}, {"x": 0.14417191684024902, "y": 40.1948498157818, "score": 47.20830724769116, "z": 1.5}, {"x": 0.14417191684024902, "y": 40.1948498157818, "score": 47.20830724769116, "z": 1.5}, {"x": 0.1437527464702905, "y": 40.2603817265308, "score": 47.183307003744254, "z": 1.5}, {"x": 0.14955537350432369, "y": 40.10400421878416, "score": 46.92901061971899, "z": 1.5}, {"x": 0.14955537350432369, "y": 40.10400421878416, "score": 46.92901061971899, "z": 1.5}, {"x": 0.15529494513966977, "y": 40.60856799705876, "score": 46.92788839483759, "z": 1.25}, {"x": 0.15529494513966977, "y": 40.60856799705876, "score": 46.92788839483759, "z": 1.25}, {"x": 0.15425379309975532, "y": 40.75495835464418, "score": 46.91559159565169, "z": 1.25}, {"x": 0.14911035171125214, "y": 40.16953612953318, "score": 46.91176963134406, "z": 1.5}, {"x": 0.1339988610266902, "y": 37.35037967194523, "score": 46.734832686377594, "z": 1.75}, {"x": 0.1339988610266902, "y": 37.35037967194523, "score": 46.734832686377594, "z": 1.75}, {"x": 0.13365606788458154, "y": 37.40688007293162, "score": 46.705079119489085, "z": 1.75}, {"x": 0.1364003162712465, "y": 35.72140005478362, "score": 46.20410240210278, "z": 2.0}, {"x": 0.1364003162712465, "y": 35.72140005478362, "score": 46.20410240210278, "z": 2.0}, {"x": 0.15359489782939717, "y": 39.73880173121124, "score": 46.191364758748094, "z": 1.25}, {"x": 0.15359489782939717, "y": 39.73880173121124, "score": 46.191364758748094, "z": 1.25}, {"x": 0.1537502919594999, "y": 39.71939542590679, "score": 46.12047353982389, "z": 1.25}, {"x": 0.15450349606687963, "y": 38.47128540206776, "score": 46.116723357976134, "z": 1.5}, {"x": 0.15450349606687963, "y": 38.47128540206776, "score": 46.116723357976134, "z": 1.5}, {"x": 0.15402769449875045, "y": 38.536817312816765, "score": 46.089846514685306, "z": 1.5}, {"x": 0.13701613124016018, "y": 35.63729184742551, "score": 46.03145269919655, "z": 2.0}, {"x": 0.15163193843696934, "y": 38.62427797280637, "score": 45.904926646231914, "z": 1.25}, {"x": 0.15163193843696934, "y": 38.62427797280637, "score": 45.904926646231914, "z": 1.25}, {"x": 0.1501436430006087, "y": 38.69254370391679, "score": 45.86243287452403, "z": 1.5}, {"x": 0.1501436430006087, "y": 38.69254370391679, "score": 45.86243287452403, "z": 1.5}, {"x": 0.14658864652102194, "y": 35.87879801301888, "score": 45.84847185172844, "z": 2.0}, {"x": 0.14658864652102194, "y": 35.87879801301888, "score": 45.84847185172844, "z": 2.0}, {"x": 0.1496856847014368, "y": 38.7580756146658, "score": 45.844812072106066, "z": 1.5}, {"x": 0.12683972312985517, "y": 36.375834997581954, "score": 45.77904852378168, "z": 1.75}, {"x": 0.12683972312985517, "y": 36.375834997581954, "score": 45.77904852378168, "z": 1.75}, {"x": 0.15223951910770891, "y": 38.545349486898594, "score": 45.76025015247771, "z": 1.25}, {"x": 0.12701855965805656, "y": 36.34949006802521, "score": 45.71701000986247, "z": 1.75}, {"x": 0.14695059750132355, "y": 35.83643443443367, "score": 45.673550111238164, "z": 2.0}, {"x": 0.13405006386740081, "y": 36.15897153678782, "score": 45.641977019544385, "z": 1.75}, {"x": 0.13405006386740081, "y": 36.15897153678782, "score": 45.641977019544385, "z": 1.75}, {"x": 0.13369824192660915, "y": 36.215471937774204, "score": 45.619291284390926, "z": 1.75}, {"x": 0.1593721988639444, "y": 33.10379701608386, "score": 45.30641578911789, "z": 2.0}, {"x": 0.1593721988639444, "y": 33.10379701608386, "score": 45.30641578911789, "z": 2.0}, {"x": 0.15621433274066548, "y": 38.7221666674055, "score": 45.24954428322676, "z": 1.25}, {"x": 0.15621433274066548, "y": 38.7221666674055, "score": 45.24954428322676, "z": 1.25}, {"x": 0.15939666187784285, "y": 33.10318491817646, "score": 45.24624748864307, "z": 2.0}, {"x": 0.14374324740834174, "y": 37.397490957746406, "score": 45.23604139472801, "z": 1.5}, {"x": 0.14374324740834174, "y": 37.397490957746406, "score": 45.23604139472801, "z": 1.5}, {"x": 0.15684860210688584, "y": 38.64323818149773, "score": 45.123080537100755, "z": 1.25}, {"x": 0.14866228217859112, "y": 36.73618015644425, "score": 44.93505833682838, "z": 1.5}, {"x": 0.13983659124721864, "y": 37.94892522210293, "score": 44.74011867468654, "z": 1.5}, {"x": 0.13983659124721864, "y": 37.94892522210293, "score": 44.74011867468654, "z": 1.5}, {"x": 0.13941428973918135, "y": 38.01445713285194, "score": 44.73165830843146, "z": 1.5}, {"x": 0.12116540878367425, "y": 35.08169908693661, "score": 44.580001565706304, "z": 2.0}, {"x": 0.12116540878367425, "y": 35.08169908693661, "score": 44.580001565706304, "z": 2.0}, {"x": 0.1596991832139885, "y": 36.77698848864607, "score": 44.56208729343337, "z": 1.5}, {"x": 0.1596991832139885, "y": 36.77698848864607, "score": 44.56208729343337, "z": 1.5}, {"x": 0.12926639830951353, "y": 34.78927937206255, "score": 44.543798633796065, "z": 1.75}, {"x": 0.12926639830951353, "y": 34.78927937206255, "score": 44.543798633796065, "z": 1.75}, {"x": 0.15918312746807828, "y": 36.84252039939507, "score": 44.54315229829885, "z": 1.5}, {"x": 0.12945698445774112, "y": 34.76293444250581, "score": 44.48938228941883, "z": 1.75}, {"x": 0.13865609634260262, "y": 36.14732239845311, "score": 44.40578391825643, "z": 1.25}, {"x": 0.13865609634260262, "y": 36.14732239845311, "score": 44.40578391825643, "z": 1.25}, {"x": 0.12144424127725179, "y": 35.0393355083514, "score": 44.3963649052775, "z": 2.0}, {"x": 0.13921647772570223, "y": 36.06839391254534, "score": 44.2549717794091, "z": 1.25}, {"x": 0.15651558169915034, "y": 31.631714578635403, "score": 44.09631133345717, "z": 2.0}, {"x": 0.15651558169915034, "y": 31.631714578635403, "score": 44.09631133345717, "z": 2.0}, {"x": 0.15734079704979065, "y": 31.547606371277286, "score": 43.939126802970456, "z": 2.0}, {"x": 0.12611437968621517, "y": 33.44100764853127, "score": 43.892662891059274, "z": 1.75}, {"x": 0.12611437968621517, "y": 33.44100764853127, "score": 43.892662891059274, "z": 1.75}, {"x": 0.12587778689583873, "y": 33.4815028497455, "score": 43.853415076303015, "z": 1.75}, {"x": 0.1375240882505775, "y": 36.97179860623748, "score": 43.84988272656699, "z": 1.25}, {"x": 0.1375240882505775, "y": 36.97179860623748, "score": 43.84988272656699, "z": 1.25}, {"x": 0.13807058887499124, "y": 36.892870120329704, "score": 43.71707916627737, "z": 1.25}, {"x": 0.15098436630586234, "y": 32.2023431580555, "score": 43.693890195123174, "z": 2.0}, {"x": 0.15098436630586234, "y": 32.2023431580555, "score": 43.693890195123174, "z": 2.0}, {"x": 0.1670206024051248, "y": 31.88090290096439, "score": 43.65318957579565, "z": 2.0}, {"x": 0.1670206024051248, "y": 31.88090290096439, "score": 43.65318957579565, "z": 2.0}, {"x": 0.15100746387975342, "y": 32.2017310601481, "score": 43.64230911627819, "z": 2.0}, {"x": 0.12867518401218428, "y": 34.10439728161265, "score": 43.52506099875679, "z": 1.75}, {"x": 0.12867518401218428, "y": 34.10439728161265, "score": 43.52506099875679, "z": 1.75}, {"x": 0.1283273338012487, "y": 34.16089768259903, "score": 43.514738470988334, "z": 1.75}, {"x": 0.16750378544851202, "y": 31.838539322379173, "score": 43.49287684994839, "z": 2.0}, {"x": 0.1619615380615236, "y": 34.895581057693605, "score": 43.41906230098492, "z": 1.5}, {"x": 0.1619615380615236, "y": 34.895581057693605, "score": 43.41906230098492, "z": 1.5}, {"x": 0.16743766068766555, "y": 34.470268146057094, "score": 43.40278985609287, "z": 1.25}, {"x": 0.12027009054986838, "y": 33.51390384019728, "score": 43.39836202487702, "z": 1.75}, {"x": 0.12027009054986838, "y": 33.51390384019728, "score": 43.39836202487702, "z": 1.75}, {"x": 0.1675793248011998, "y": 34.454240911499824, "score": 43.39321905640162, "z": 1.25}, {"x": 0.1675793248011998, "y": 34.454240911499824, "score": 43.39321905640162, "z": 1.25}, {"x": 0.12004921592185855, "y": 33.554399041411514, "score": 43.35889394271485, "z": 1.75}, {"x": 0.13231346342802253, "y": 36.02232216117308, "score": 43.338611173397155, "z": 1.5}, {"x": 0.13231346342802253, "y": 36.02232216117308, "score": 43.338611173397155, "z": 1.5}];
+const scCtx = document.getElementById('chart_scatter').getContext('2d');
+new Chart(scCtx, {
+    type: 'scatter',
+    data: {
+        datasets: [{
+            label: '参数组合',
+            data: scatterData.map(d => ({x: d.x, y: d.y, score: d.score})),
+            backgroundColor: scatterData.map(d =>
+                d.score > 60 ? 'rgba(37,99,235,0.7)' : d.score > 40 ? 'rgba(245,158,11,0.6)' : 'rgba(239,68,68,0.5)'),
+            pointRadius: scatterData.map(d => Math.max(4, d.score / 10)),
+        }]
+    },
+    options: { responsive:true, plugins:{legend:{display:false},
+        title:{display:true,text:'Sharpe vs 年化收益率 (气泡大小=Score)'}},
+        scales:{x:{title:{display:true,text:'Sharpe'}}, y:{title:{display:true,text:'年化收益%'}}}} }
+});
+
+// Z vs TP 热力图 (固定SL=8,T=288)
+const hmLabelsZ = [1.25, 1.5, 1.75, 2.0];
+const hmLabelsTP = [2.5, 3.0, 4.0, 5.0];
+const hmData = [[46.9, 46.9, 45.6, 45.3], [46.2, 45.9, 44.5, 44.1], [45.2, 44.6, 42.0, 43.7], [43.8, 43.4, 41.6, 42.6]];
+const hmCtx = document.getElementById('chart_heatmap').getContext('2d');
+function toColor(v) {
+    if(v==null) return 'transparent';
+    if(v>=60) return 'rgba(37,99,235,' + (0.3+(v-60)/40*0.7) + ')';
+    if(v>=40) return 'rgba(245,158,11,' + (0.3+(v-40)/20*0.7) + ')';
+    return 'rgba(239,68,68,' + (0.3+v/40*0.5) + ')';
+}
+const flatHM = [];
+for(let r=0;r<hmData.length;r++) for(let c=0;c<hmData[r].length;c++)
+    flatHM.push({x:c,y:r,v:hmData[r][c]});
+new Chart(hmCtx, {
+    type: 'matrix',
+    data: {
+        labels: hmLabelsZ,
+        datasets: [{
+            label: 'Score',
+            data: flatHM.map(d => ((d.v||0)+100).toFixed(1)),
+            backgroundColor: flatHM.map(d => toColor(d.v)),
+            width: (ctx) => 36,
+            height: (ctx) => 28,
+        }]
+    },
+    options: { responsive:true, plugins:{legend:{display:false},
+        title:{display:true,text:'参数热力图: Z_entry vs TP (SL=8, Time=288)'}},
+        scales:{x:{labels:hmLabelsZ,title:{display:true,text:'Z_entry'}},
+        y:{labels:hmLabelsTP,title:{display:true,text:'TP (pt)'}}} } }
+});
+</script>
+
+</body></html>
