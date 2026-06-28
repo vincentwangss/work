@@ -371,6 +371,7 @@ class OscillationBacktestEngine:
         self.consecutive_phase = 0
         self.exit_bar = -999
         self.consecutive_losses = 0
+        self._last_loss_bar = -999
 
     def run(self, df, symbol="unknown"):
         """Run oscillation backtest on historical data."""
@@ -467,6 +468,7 @@ class OscillationBacktestEngine:
                         self.consecutive_losses = 0
                     else:
                         self.consecutive_losses += 1
+                        self._last_loss_bar = i
 
                     self.position = 0
                     self.entry_price = 0.0
@@ -514,14 +516,23 @@ class OscillationBacktestEngine:
 
     def _check_entry(self, df, i, phase):
         """Check entry with guards."""
-        if self.consecutive_phase < self.phase_stable_bars:
-            return Signal.NONE
+        # Phase stability: only relevant when not confirm=False
+        if self.config.get("oscillation_trading", {}).get("require_oscillation_confirm", True):
+            if self.consecutive_phase < self.phase_stable_bars:
+                return Signal.NONE
         if i - self.exit_bar < self.cooldown_bars:
             return Signal.NONE
 
-        max_loss = self.config.get("oscillation_trading", {}).get("max_consecutive_losses", 3)
+        # Consecutive loss throttle: after N losses, skip a window then resume
+        max_loss = self.config.get("oscillation_trading", {}).get("max_consecutive_losses", 5)
+        loss_penalty_bars = self.config.get("oscillation_trading", {}).get("loss_penalty_bars", 30)
         if self.consecutive_losses >= max_loss:
-            return Signal.NONE
+            bars_since_last_loss = i - self._last_loss_bar if hasattr(self, '_last_loss_bar') else 0
+            if bars_since_last_loss < loss_penalty_bars:
+                return Signal.NONE
+            # After penalty window, reset the counter so trading can resume
+            self.consecutive_losses = max_loss // 2
+            self._last_loss_bar = i
 
         return self.trader.evaluate_entry(df, i, phase)
 

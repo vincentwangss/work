@@ -77,7 +77,7 @@ class OscillationConfig:
     exit_zone: float = 0.75           # 顶部区域阈值
     take_profit_atr: float = 2.0      # ATR止盈倍数
     stop_loss_atr: float = 1.5        # ATR止损倍数
-    max_holding_bars: int = 15        # 时间止损
+    max_holding_bars: int = 12        # 时间止损 (12根30min≈0.5交易日)
     channel_break_exit: bool = True   # 通道突破出场
     channel_break_bars: int = 2       # 连续突破几根K线算有效突破
 

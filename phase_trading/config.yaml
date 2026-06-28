@@ -97,8 +97,9 @@ oscillation_trading:
 
   # ── 冷却与风控 ──
   cooldown_bars: 3                # 出场后冷却
-  max_consecutive_losses: 3       # 连续止损冷却
-  phase_stable_bars: 5            # 震荡稳定确认
+  max_consecutive_losses: 5       # 连续止损次数 (超过后进入 penalty_bars 冷却期)
+  loss_penalty_bars: 30           # 连续止损后冷却的K线数 (30根30min≈1天)
+  phase_stable_bars: 2            # 震荡稳定确认 (放松版不需要)
 
   # ── 模式 ──
   t_mode: long_only               # long_only / both
