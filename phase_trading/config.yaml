@@ -1,0 +1,107 @@
+# Phase Trading System Configuration
+
+# === Data Settings ===
+data:
+  source: tushare          # data source: tushare, akshare, csv
+  adjust: qfq              # price adjustment: qfq (前复权), hfq (后复权), None
+  cache_dir: data/cache    # data cache directory
+
+# === Phase Detection Parameters ===
+phase_detector:
+  adx_period: 14           # ADX calculation period
+  adx_threshold: 25        # ADX threshold for trending vs ranging
+  ma_fast: 20              # fast MA period
+  ma_slow: 60              # slow MA period
+  ma_slope_period: 5       # periods for MA slope calculation
+
+# === Uptrend Strategy (主升) ===
+uptrend:
+  enabled: true
+  # Entry conditions — price pullback to short-term MA
+  pullback_to_ma3: true        # entry on pullback to MA3
+  pullback_to_ma5: true        # entry on pullback to MA5
+  pullback_to_ma10: true       # entry on pullback to MA10
+  ma_touch_pct: 0.015          # max distance (%) from MA to trigger pullback entry
+  # Exit conditions
+  exit_on_phase_change: true   # exit when phase changes from 主升
+  exit_no_new_high_days: 3     # exit after N days without new high (trend stall)
+  exit_on_ma_break: true       # exit when price closes below MA10
+  exit_on_consolidation: true  # exit when narrow range + MA flattening detected
+  hard_stop_pct: -0.08        # hard stop loss (% from entry, safety backstop)
+
+# === Range Strategy (震荡) ===
+rangetrading:
+  enabled: true
+  # Entry conditions
+  support_bounce: true         # entry at support level with bounce
+  oversold_bounce: true        # entry on RSI oversold bounce
+  rsi_oversold: 30             # RSI oversold threshold
+  rsi_neutral: 40              # RSI level for confirmation after oversold
+  swing_window: 5              # window for swing point detection
+  # Exit conditions
+  exit_on_resistance: true     # exit near resistance
+  exit_on_overbought: true     # exit on RSI overbought
+  rsi_overbought: 70           # RSI overbought threshold
+  profit_target_atr: 2.0       # take profit in ATR multiples
+  # Risk
+  stop_loss_atr: 1.5           # stop loss in ATR multiples
+  max_holding_bars: 30         # max bars to hold a position
+
+# === Downtrend Strategy (主跌) ===
+downtrend:
+  enabled: true
+  # No entries in downtrend - stay in cash
+
+# === Backtest Settings ===
+backtest:
+  initial_capital: 100000.0    # starting capital
+  commission_pct: 0.0003       # commission rate (0.03%)
+  slippage_pct: 0.001          # slippage (0.1%)
+  min_volume: 0                # minimum volume filter
+  phase_stable_bars: 5         # required consecutive same-phase bars before entry
+  cooldown_bars: 5             # bars to wait after exit before re-entering
+  output_dir: reports          # output directory
+
+# === Oscillation 做T Strategy (震荡做T) ===
+oscillation_trading:
+  enabled: true
+
+  # ── 核心参数：震荡强度 (0.5 ~ 5.0) ──
+  #   Low  (0.5): 窄通道，信号敏感，交易频繁
+  #   Med  (1.0): 标准布林带，适合普通震荡
+  #   High (2.0+): 宽通道，要求极端位置才触发，交易少但胜率高
+  oscillation_strength: 1.0
+
+  # ── 通道参数 ──
+  lookback: 60                    # 通道计算窗口
+  channel_type: bollinger         # bollinger / percentile / zscore
+  channel_std: 2.0                # 布林带标准差倍数
+  min_bounces: 3                  # 最小反弹次数确认震荡
+  bounce_window: 30               # 反弹计数窗口
+
+  # ── 入场参数 ──
+  entry_zone: 0.3                 # 入场区域 (osc_position < 0.3 = 下轨附近)
+  require_volume_contraction: true    # 要求地量/缩量
+  require_reversal_candle: true       # 要求反转K线确认
+
+  # ── 出场参数 ──
+  exit_zone: 0.75                 # 出场区域 (osc_position > 0.75 = 上轨附近)
+  take_profit_atr: 2.0            # ATR止盈
+  stop_loss_atr: 1.5              # ATR止损
+  max_holding_bars: 15            # 最大持仓K线数
+  channel_break_exit: true        # 通道突破时出场
+  channel_break_bars: 2           # 连续几根突破算有效
+
+  # ── 冷却与风控 ──
+  cooldown_bars: 3                # 出场后冷却
+  max_consecutive_losses: 3       # 连续止损冷却
+  phase_stable_bars: 5            # 震荡稳定确认
+
+  # ── 模式 ──
+  t_mode: long_only               # long_only / both
+
+# === Risk Management ===
+risk:
+  max_position_pct: 0.95       # max position as % of capital
+  max_single_loss_pct: 0.02    # max acceptable single loss
+  min_profit_factor: 1.5       # minimum profit factor for strategy validation
