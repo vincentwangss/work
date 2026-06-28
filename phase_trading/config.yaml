@@ -2,9 +2,11 @@
 
 # === Data Settings ===
 data:
-  source: tushare          # data source: tushare, akshare, csv
+  source: baostock          # data source: baostock (recommended), akshare, tushare, csv
   adjust: qfq              # price adjustment: qfq (前复权), hfq (后复权), None
   cache_dir: data/cache    # data cache directory
+  # Minute data defaults (used by osc command when --freq is specified)
+  minute_freq: 30          # default minute frequency: 5, 15, 30, 60
 
 # === Phase Detection Parameters ===
 phase_detector:

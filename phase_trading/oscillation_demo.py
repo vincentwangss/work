@@ -22,8 +22,10 @@ import pandas as pd
 from oscillation_trader import (
     OscillationConfig, OscillationChannel, OscillationTrader,
     find_oscillation_stocks, compute_oscillation_metrics,
+    StrengthOptimizer,
 )
 from backtest import OscillationBacktestEngine
+from data_loader import DataLoader
 
 
 def generate_synthetic_data(n=300, amp=2.0, base=10.0, seed=42):
@@ -47,26 +49,27 @@ def generate_synthetic_data(n=300, amp=2.0, base=10.0, seed=42):
     return df
 
 
-def load_real_data(symbol, start="20240101", end="20260101"):
-    """Load real stock data via akshare."""
+def load_real_data(symbol, start="20240101", end="20260101", source="akshare", freq=None):
+    """Load real stock data from specified source."""
+    config = {"data": {"source": source, "adjust": "qfq", "cache_dir": "data/cache"}}
+    loader = DataLoader(config)
+
     try:
-        import akshare as ak
-        df = ak.stock_zh_a_hist(
-            symbol=symbol, period="daily",
-            start_date=start, end_date=end, adjust="qfq",
-        )
-        col_map = {"日期": "date", "开盘": "open", "收盘": "close",
-                    "最高": "high", "最低": "low", "成交量": "volume"}
-        df = df.rename(columns={k: v for k, v in col_map.items() if k in df.columns})
-        df.columns = [c.lower() for c in df.columns]
-        df["date"] = pd.to_datetime(df["date"])
-        df = df.set_index("date").sort_index()
-        df = df[["open", "high", "low", "close", "volume"]].astype(float)
-        print(f"  Loaded {symbol}: {len(df)} bars, "
-              f"price range [{df['low'].min():.2f}, {df['high'].max():.2f}]")
+        if freq:
+            # Minute-level data
+            df = loader.load_minute(symbol, start, end, freq)
+            print(f"  Loaded {symbol}: {len(df)} bars ({freq}min), "
+                  f"{df.index[0]} ~ {df.index[-1]}, "
+                  f"price [{df['low'].min():.2f}, {df['high'].max():.2f}]")
+        else:
+            # Daily data
+            df = loader.load(symbol, start, end)
+            print(f"  Loaded {symbol}: {len(df)} daily bars, "
+                  f"{df.index[0].date()} ~ {df.index[-1].date()}, "
+                  f"price [{df['low'].min():.2f}, {df['high'].max():.2f}]")
         return df
-    except ImportError:
-        print("  akshare not installed. Install: pip install akshare")
+    except ImportError as e:
+        print(f"  {e}")
         sys.exit(1)
     except Exception as e:
         print(f"  Error loading {symbol}: {e}")
@@ -85,12 +88,25 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument("--symbol", default=None, help="Stock symbol (omit for synthetic data)")
-    parser.add_argument("--start", default="20240101", help="Start date (real data only)")
-    parser.add_argument("--end", default="20260101", help="End date (real data only)")
+    parser.add_argument("--start", default="20260101", help="Start date (YYYYMMDD)")
+    parser.add_argument("--end", default="20260628", help="End date (YYYYMMDD)")
+    parser.add_argument("--source", default="akshare",
+                        choices=["akshare", "baostock"],
+                        help="Data source (akshare=1.5mo min data, baostock=6mo+ min data)")
+    parser.add_argument("--freq", default=None,
+                        choices=["5", "15", "30", "60"],
+                        help="Minute frequency (omit for daily data)")
     parser.add_argument("--strength", type=float, default=1.0, help="Oscillation strength (0.5~5.0)")
     parser.add_argument("--channel", default="bollinger", choices=["bollinger", "percentile", "zscore"],
                         help="Channel type")
     parser.add_argument("--lookback", type=int, default=60, help="Oscillation lookback period")
+    parser.add_argument("--optimize", action="store_true",
+                        help="Auto-optimize oscillation_strength on recent data")
+    parser.add_argument("--optimize-bars", type=int, default=120,
+                        help="Validation window for optimizer (bars)")
+    parser.add_argument("--optimize-metric", default="sharpe_ratio",
+                        choices=["sharpe_ratio", "total_return_pct", "profit_factor", "composite"],
+                        help="Metric to maximize in optimization")
     parser.add_argument("--no-backtest", action="store_true", help="Skip backtest, only show signals")
     args = parser.parse_args()
 
@@ -100,15 +116,23 @@ def main():
     print(f"{'='*60}")
 
     if args.symbol:
-        df = load_real_data(args.symbol, args.start, args.end)
+        source_name = f"{args.source} {'/' + args.freq + 'min' if args.freq else 'daily'}"
+        print(f"  Source: {source_name}")
+        df = load_real_data(args.symbol, args.start, args.end,
+                             source=args.source, freq=args.freq)
     else:
         df = generate_synthetic_data()
+
+    # Smart lookback: minute data needs shorter lookback
+    auto_lookback = args.lookback
+    if args.freq and args.lookback == 60:
+        auto_lookback = min(45, len(df) // 12)  # ~3-4 trading days for minute data
 
     # ── 2. Config ──
     config = OscillationConfig(
         oscillation_strength=args.strength,
         channel_type=args.channel,
-        lookback=args.lookback,
+        lookback=auto_lookback,
         take_profit_atr=2.5,
         stop_loss_atr=1.5,
         max_holding_bars=25,
@@ -118,7 +142,7 @@ def main():
         require_reversal_candle=False,
     )
 
-    print(f"\n  Config:")
+    print(f"\n  Config{' (optimized)' if args.optimize else ''}:")
     print(f"    Strength:       {config.oscillation_strength}")
     print(f"    Channel:        {config.channel_type} (effective std={config.effective_std:.2f})")
     print(f"    Lookback:       {config.lookback}")
@@ -126,7 +150,33 @@ def main():
     print(f"    Exit zone:      position > {config.exit_zone}  (z > {config.effective_exit_zscore})")
     print(f"    Min bounces:    {config.effective_min_bounces}")
 
-    # ── 3. Compute channel ──
+    # ── 3. Optional: Optimize strength ──
+    if args.optimize:
+        print(f"\n  ── Rolling Optimization ──")
+        print(f"    Window:         last {args.optimize_bars} bars")
+        print(f"    Metric:         {args.optimize_metric}")
+        print(f"    Candidates:     [0.4, 0.6, 0.8, 1.0, 1.2, 1.5, 2.0, 3.0]")
+
+        optimizer = StrengthOptimizer(config)
+        best_strength, opt_results = optimizer.optimize(
+            df,
+            validation_bars=args.optimize_bars,
+            metric=args.optimize_metric,
+        )
+
+        if opt_results:
+            print(f"\n  Optimization Results:")
+            print(optimizer.summary(opt_results, best_strength))
+            print(f"\n    >> Best strength: {best_strength}")
+
+            # Update config with optimized value
+            from oscillation_trader import copy_config_with_strength
+            config = copy_config_with_strength(config, best_strength)
+            print(f"    >> Updated config strength to {config.oscillation_strength}")
+        else:
+            print(f"    (optimization returned no valid candidates, using default)")
+
+    # ── 4. Compute channel ──
     channel = OscillationChannel(config)
     df_out = channel.compute(df)
 
@@ -176,9 +226,9 @@ def main():
                 "slippage_pct": 0.001,
             },
             "oscillation_trading": {
-                "oscillation_strength": args.strength,
+                "oscillation_strength": config.oscillation_strength,
                 "channel_type": args.channel,
-                "lookback": args.lookback,
+                "lookback": auto_lookback,
                 "take_profit_atr": 2.5,
                 "stop_loss_atr": 1.5,
                 "max_holding_bars": 25,
@@ -194,23 +244,25 @@ def main():
         engine.summary(result)
 
         # Print trade log
+        hold_unit = "b" if args.freq else "d"
         trades = result.get("trades", [])
         if trades:
             print(f"\n  Trade Log:")
-            print(f"  {'#':>3s}  {'Entry':>12s}  {'Exit':>12s}  {'Ret%':>7s}  "
-                  f"{'Hold':>4s}  {'Price':>10s}  {'EntryPos':>8s}")
-            print(f"  {'-'*60}")
+            print(f"  {'#':>3s}  {'Entry':>16s}  {'Exit':>16s}  {'Ret%':>7s}  "
+                  f"{'Hold':>4s}  {'Price':>14s}  {'EntryPos':>8s}")
+            print(f"  {'-'*74}")
             for i, t in enumerate(trades, 1):
-                entry_d = str(t.get("entry_date", "?"))[:10]
-                exit_d = str(t.get("exit_date", "?"))[:10]
+                entry_d = str(t.get("entry_date", "?"))[:16]
+                exit_d = str(t.get("exit_date", "?"))[:16]
                 ret = t.get("return_pct", 0)
                 hold = t.get("holding_bars", 0)
                 ep = t.get("entry_price", 0)
                 xp = t.get("exit_price", 0)
                 epos = t.get("entry_osc_position", "?")
                 label = "WIN" if t.get("gross_pnl", 0) > 0 else "LOSS"
-                print(f"  {label:>4s} {i:2d}  {entry_d:>12s}  {exit_d:>12s}  "
-                      f"{ret:>6.2f}%  {hold:>3d}d  {ep:>5.2f}->{xp:>5.2f}  {str(epos):>8s}")
+                print(f"  {label:>4s} {i:2d}  {entry_d:>16s}  {exit_d:>16s}  "
+                      f"{ret:>6.2f}%  {hold:>3d}{hold_unit}  "
+                      f"{ep:>7.2f}->{xp:>7.2f}  {str(epos):>8s}")
     else:
         print("\n  (backtest skipped with --no-backtest)")
 

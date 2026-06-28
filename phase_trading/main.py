@@ -180,18 +180,57 @@ def cmd_osc_backtest(config, args):
             config["oscillation_trading"] = {}
         config["oscillation_trading"]["channel_type"] = args.channel_type
 
+    # Override source from CLI
+    if args.source and "data" not in config:
+        config["data"] = {"source": "akshare"}
+    if args.source:
+        config["data"]["source"] = args.source
+
     loader = DataLoader(config)
-    engine = OscillationBacktestEngine(config)
 
     print(f"\n{'='*60}")
+    source_info = f"{args.source or config['data']['source']}"
+    if args.freq:
+        source_info += f" / {args.freq}min"
+    print(f"  Source: {source_info}")
     print(f"  震荡做T Backtest: {args.symbol}")
     strength = config.get("oscillation_trading", {}).get("oscillation_strength", 1.0)
     channel = config.get("oscillation_trading", {}).get("channel_type", "bollinger")
     print(f"  Strength: {strength}  |  Channel: {channel}")
+    if args.optimize:
+        print(f"  Optimize:  ON (window={args.optimize_bars}b, metric={args.optimize_metric})")
     print(f"{'='*60}")
 
     print(f"Loading data: {args.symbol} [{args.start} ~ {args.end}]")
-    df = loader.load(args.symbol, args.start, args.end)
+    if args.freq:
+        df = loader.load_minute(args.symbol, args.start, args.end, args.freq)
+    else:
+        df = loader.load(args.symbol, args.start, args.end)
+    print(f"  Loaded {len(df)} bars ({df.index[0]} ~ {df.index[-1]})")
+
+    # ── Optional: Rolling optimization ──
+    if args.optimize:
+        from oscillation_trader import OscillationConfig, StrengthOptimizer, copy_config_with_strength
+        osc_cfg = OscillationConfig.from_dict(config.get("oscillation_trading", {}))
+        optimizer = StrengthOptimizer(osc_cfg)
+
+        print(f"\n  Optimizing oscillation_strength on last {args.optimize_bars} bars...")
+        best_strength, opt_results = optimizer.optimize(
+            df,
+            validation_bars=args.optimize_bars,
+            metric=args.optimize_metric,
+        )
+
+        if opt_results:
+            print(optimizer.summary(opt_results, best_strength))
+            print(f"\n    >> Best strength: {best_strength}")
+            config["oscillation_trading"]["oscillation_strength"] = best_strength
+            strength = best_strength
+        else:
+            print(f"    (no valid candidates, using configured strength={strength})")
+
+    # Re-create engine with (possibly optimized) config
+    engine = OscillationBacktestEngine(config)
     print(f"  Loaded {len(df)} bars ({df.index[0].date()} ~ {df.index[-1].date()})")
 
     print(f"Running backtest...")
@@ -328,14 +367,25 @@ Examples:
         """,
     )
     osc.add_argument("--symbol", required=True, help="Stock symbol")
-    osc.add_argument("--start", default="20200101", help="Start date")
-    osc.add_argument("--end", default="20260101", help="End date")
+    osc.add_argument("--start", default="20260101", help="Start date (YYYYMMDD)")
+    osc.add_argument("--end", default="20260628", help="End date (YYYYMMDD)")
+    osc.add_argument("--source", default=None, choices=["akshare", "baostock"],
+                     help="Data source (baostock has longer minute history)")
+    osc.add_argument("--freq", default=None, choices=["5", "15", "30", "60"],
+                     help="Use minute K-line data instead of daily")
     osc.add_argument("--strength", type=float, default=None,
                      help="Oscillation strength (0.5~5.0, overrides config)")
     osc.add_argument("--channel", dest="channel_type", default=None,
                      choices=["bollinger", "percentile", "zscore"],
                      help="Channel type (overrides config)")
     osc.add_argument("--output", help="Output JSON path")
+    osc.add_argument("--optimize", action="store_true",
+                     help="Auto-optimize oscillation_strength on recent data")
+    osc.add_argument("--optimize-bars", type=int, default=120,
+                     help="Validation window for optimizer (bars)")
+    osc.add_argument("--optimize-metric", default="sharpe_ratio",
+                     choices=["sharpe_ratio", "total_return_pct", "profit_factor", "composite"],
+                     help="Metric to maximize in optimization")
     osc.add_argument("--config", default="config.yaml", help="Config file path")
 
     # ── Oscillation Scan ──
