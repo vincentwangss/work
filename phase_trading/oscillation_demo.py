@@ -236,6 +236,7 @@ def main():
                 "exit_zone": 0.7,
                 "require_volume_contraction": False,
                 "require_reversal_candle": False,
+                "require_oscillation_confirm": False,
             },
             "risk": {"max_position_pct": 0.95},
         }

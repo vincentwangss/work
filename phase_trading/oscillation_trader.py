@@ -66,7 +66,8 @@ class OscillationConfig:
     bounce_window: int = 30
 
     # ── 入场参数 ──
-    entry_zone: float = 0.8           # 底部区域阈值 (0~1, 0=下轨, 1=上轨)
+    entry_zone: float = 0.3           # 底部区域阈值 (0~1, 0=下轨, 1=上轨)
+    require_oscillation_confirm: bool = True  # 是否要求震荡确认后再入场
     require_volume_contraction: bool = True   # 要求缩量
     volume_std_threshold: float = 1.5         # 成交量 < 均值+1.5倍标准差
     require_reversal_candle: bool = True      # 要求反转K线确认
@@ -429,13 +430,13 @@ class OscillationTrader:
         row = df.iloc[i]
 
         # ── Phase check ──
-        # Can use external phase detector or self-detect
         if not self._is_valid_phase(df, i, phase):
             return Signal.NONE
 
-        # Must be in oscillating state
-        if not self.channel.detect_is_oscillating(df, i):
-            return Signal.NONE
+        # Oscillation confirmation (can be relaxed for more trades)
+        if self.cfg.require_oscillation_confirm:
+            if not self.channel.detect_is_oscillating(df, i):
+                return Signal.NONE
 
         # ── Position check: price in lower zone ──
         pos = row.get("osc_position")
@@ -536,9 +537,14 @@ class OscillationTrader:
     def _is_valid_phase(self, df: pd.DataFrame, i: int, phase: int) -> bool:
         """Check if trading is valid in current phase.
 
-        If external phase is 0 (震荡), use it directly.
-        If external phase is not 0, still allow if self-detected oscillation.
+        If oscillation confirm is OFF, always allow entry —
+        position + z-score + SL/TP provide the risk control.
+        If ON:
+          - External phase 0 (震荡) is OK.
+          - Non-zero phase is OK only if self-detected oscillation.
         """
+        if not self.cfg.require_oscillation_confirm:
+            return True
         if phase == 0:
             return True
         # Allow in mild uptrend/downtrend if self-detect says oscillating

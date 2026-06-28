@@ -54,6 +54,7 @@ def run_bt(df, strength, lookback, tprofit=2.0, sloss=1.5, max_hold=20):
             "take_profit_atr": tprofit, "stop_loss_atr": sloss, "max_holding_bars": max_hold,
             "entry_zone": 0.3, "exit_zone": 0.7,
             "require_volume_contraction": False, "require_reversal_candle": False,
+            "require_oscillation_confirm": False,
         },
         "risk": {"max_position_pct": 0.95},
     }

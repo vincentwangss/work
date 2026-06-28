@@ -83,6 +83,7 @@ oscillation_trading:
 
   # ── 入场参数 ──
   entry_zone: 0.3                 # 入场区域 (osc_position < 0.3 = 下轨附近)
+  require_oscillation_confirm: false  # 是否需要震荡确认再入场（false=仅凭position+Z-score入场）
   require_volume_contraction: true    # 要求地量/缩量
   require_reversal_candle: true       # 要求反转K线确认
 
