@@ -658,3 +658,285 @@ def find_oscillation_stocks(
 
     results.sort(key=lambda r: r.get("score", 0), reverse=True)
     return results
+
+
+# ──────────────────────────────────────────────
+#  Rolling Parameter Optimizer
+# ──────────────────────────────────────────────
+
+@dataclass
+class StrengthCandidate:
+    """Result for one candidate strength value."""
+    strength: float
+    total_return_pct: float
+    annual_return_pct: float
+    sharpe_ratio: float
+    max_drawdown_pct: float
+    total_trades: int
+    win_rate_pct: float
+    profit_factor: float
+
+
+class StrengthOptimizer:
+    """Rolling parameter optimizer for oscillation_strength.
+
+    Scans multiple strength values over a recent historical window,
+    picks the one that maximized the target metric,
+    then returns the best value for forward trading.
+
+    Uses an inline lightweight backtest (no trade log) for speed,
+    avoiding circular imports with backtest.py.
+    """
+
+    def __init__(self, base_config: Optional[OscillationConfig] = None):
+        self.base_config = base_config or OscillationConfig()
+
+    def optimize(
+        self,
+        df: pd.DataFrame,
+        strength_candidates: Optional[list[float]] = None,
+        validation_bars: int = 120,
+        metric: str = "sharpe_ratio",
+        min_trades: int = 2,
+        initial_capital: float = 100000.0,
+    ) -> tuple[float, list[StrengthCandidate]]:
+        """Run optimization and return (best_strength, candidate_results).
+
+        The last `validation_bars` of df are used as the validation window.
+        Each candidate is scored via a lightweight backtest.
+
+        Args:
+            df: Full OHLCV DataFrame (use the most recent portion for validation).
+            strength_candidates: List of strength values to try.
+                Default: [0.4, 0.6, 0.8, 1.0, 1.2, 1.5, 2.0, 3.0].
+            validation_bars: Number of recent bars to validate on.
+            metric: Which metric to maximize ('sharpe_ratio', 'total_return_pct',
+                    'profit_factor', or 'composite').
+            min_trades: Minimum trades required for a candidate to be valid.
+            initial_capital: Starting capital for the inline backtest.
+
+        Returns:
+            (best_strength, candidate_results)
+        """
+        candidates = strength_candidates or [0.4, 0.6, 0.8, 1.0, 1.2, 1.5, 2.0, 3.0]
+
+        if len(df) < validation_bars + self.base_config.lookback + 30:
+            # Not enough data — return default
+            return self.base_config.oscillation_strength, []
+
+        # Slice the validation window from the END of df
+        val_start = len(df) - validation_bars
+        df_val = df.iloc[max(0, val_start - self.base_config.lookback):].copy()
+
+        results: list[StrengthCandidate] = []
+
+        for strength in candidates:
+            cfg = copy_config_with_strength(self.base_config, strength)
+            stats = self._quick_backtest(df_val, cfg, initial_capital)
+            if stats is None:
+                continue
+            if stats["total_trades"] < min_trades:
+                continue
+            results.append(StrengthCandidate(strength=strength, **stats))
+
+        if not results:
+            return self.base_config.oscillation_strength, []
+
+        # Score and pick best
+        scored = self._score_candidates(results, metric)
+        best = scored[0]
+
+        return best.strength, results
+
+    def _quick_backtest(
+        self,
+        df: pd.DataFrame,
+        cfg: OscillationConfig,
+        capital: float,
+    ) -> Optional[dict]:
+        """Fast inline backtest that only computes aggregate metrics.
+
+        Returns None if the backtest fails or produces no trades.
+        """
+        try:
+            channel = OscillationChannel(cfg)
+            trader = OscillationTrader(cfg)
+            df_out = channel.compute(df)
+        except Exception:
+            return None
+
+        n = len(df_out)
+        if n < cfg.lookback + 10:
+            return None
+
+        cash = float(capital)
+        position = 0
+        entry_price = 0.0
+        entry_idx = 0
+        equities = []
+        n_trades = 0
+        n_wins = 0
+        total_profit = 0.0
+        total_loss = 0.0
+        max_equity = float(capital)
+        peak = float(capital)
+        max_drawdown = 0.0
+
+        for i in range(cfg.lookback, n):
+            row = df_out.iloc[i]
+            phase = row.get("phase", 0)
+
+            if position == 0:
+                sig = trader.evaluate_entry(df_out, i, phase)
+                if sig == Signal.BUY:
+                    price = row["close"] * 1.001  # 0.1% slippage
+                    allocated = cash * 0.95
+                    shares = int(allocated / (price * 100)) * 100
+                    if shares < 100:
+                        continue
+                    cost = shares * price * 1.0003  # 0.03% commission
+                    if cost > cash:
+                        continue
+                    cash -= cost
+                    position = shares
+                    entry_price = price
+                    entry_idx = i
+            else:
+                should_exit = trader.evaluate_exit(df_out, i, entry_idx, entry_price, phase)
+                if should_exit:
+                    price = row["close"] * 0.999  # 0.1% slippage
+                    proceeds = position * price * 0.9997  # 0.03% commission
+                    gross_pnl = proceeds - (position * entry_price)
+                    cash += proceeds
+
+                    n_trades += 1
+                    if gross_pnl > 0:
+                        n_wins += 1
+                        total_profit += gross_pnl
+                    else:
+                        total_loss += abs(gross_pnl)
+
+                    position = 0
+
+            # Record equity
+            equity = cash + position * row["close"]
+            equities.append(equity)
+            peak = max(peak, equity)
+            dd = (peak - equity) / peak * 100 if peak > 0 else 0
+            max_drawdown = max(max_drawdown, dd)
+
+        # Final equity (close any open position)
+        if position > 0:
+            price = df_out.iloc[-1]["close"]
+            proceeds = position * price * 0.9997
+            cash += proceeds
+            equities[-1] = cash
+
+        final_equity = cash
+        total_return = (final_equity / capital - 1) * 100
+
+        if n_trades == 0:
+            return None
+
+        # Daily returns from equity curve for Sharpe
+        eq_series = pd.Series(equities, index=df_out.index[cfg.lookback:])
+        daily_ret = eq_series.pct_change().dropna()
+
+        if len(daily_ret) > 1 and daily_ret.std() > 0:
+            excess = daily_ret - 0.03 / 252
+            sharpe = np.sqrt(252) * excess.mean() / daily_ret.std()
+        else:
+            sharpe = 0.0
+
+        n_days = len(eq_series)
+        years = max(n_days / 252, 0.01)
+        ann_return = ((1 + total_return / 100) ** (1 / years) - 1) * 100
+
+        win_rate = n_wins / n_trades * 100 if n_trades > 0 else 0
+        profit_factor = total_profit / total_loss if total_loss > 0 else (
+            float("inf") if total_profit > 0 else 0
+        )
+
+        return {
+            "total_return_pct": round(total_return, 2),
+            "annual_return_pct": round(ann_return, 2),
+            "sharpe_ratio": round(sharpe, 2),
+            "max_drawdown_pct": round(max_drawdown, 2),
+            "total_trades": n_trades,
+            "win_rate_pct": round(win_rate, 1),
+            "profit_factor": round(profit_factor, 2),
+        }
+
+    def _score_candidates(
+        self,
+        candidates: list[StrengthCandidate],
+        metric: str,
+    ) -> list[StrengthCandidate]:
+        """Sort candidates by the target metric (descending)."""
+        if metric == "composite":
+            # Composite score: normalize and combine multiple metrics
+            def _composite(c: StrengthCandidate) -> float:
+                sharpe_score = max(0, min(c.sharpe_ratio / 3, 1))
+                return_score = max(0, min(c.total_return_pct / 100, 1))
+                dd_penalty = max(0, c.max_drawdown_pct / 50)
+                trade_score = min(c.total_trades / 10, 1) if c.total_trades >= 3 else -1
+                return (sharpe_score * 0.4 + return_score * 0.3 - dd_penalty * 0.2
+                        + trade_score * 0.1)
+
+            candidates.sort(key=_composite, reverse=True)
+        elif metric == "profit_factor":
+            candidates.sort(
+                key=lambda c: c.profit_factor if c.profit_factor != float("inf") else 999,
+                reverse=True,
+            )
+        else:
+            candidates.sort(
+                key=lambda c: getattr(c, metric, 0),
+                reverse=True,
+            )
+        return candidates
+
+    def summary(self, results: list[StrengthCandidate], best_strength: float) -> str:
+        """Format optimization results as a printable table."""
+        if not results:
+            return "  (no valid candidates)"
+
+        lines = []
+        labels = {
+            "strength": "Strength",
+            "total_return_pct": "Return%",
+            "sharpe_ratio": "Sharpe",
+            "max_drawdown_pct": "MaxDD%",
+            "total_trades": "Trades",
+            "win_rate_pct": "Win%",
+            "profit_factor": "PFactor",
+        }
+
+        header = f"  {'*':>3s}  " + "  ".join(f"{v:>8s}" for v in labels.values())
+        sep = "  " + "-" * (5 + len(labels) * 10)
+        lines.append(header)
+        lines.append(sep)
+
+        for c in sorted(results, key=lambda x: x.strength):
+            marker = ">" if abs(c.strength - best_strength) < 0.001 else " "
+            pf = c.profit_factor
+            pf_str = f"{pf:.2f}" if pf != float("inf") else "  inf"
+            lines.append(
+                f"  {marker:>3s}  "
+                f"{c.strength:>8.1f}  "
+                f"{c.total_return_pct:>7.2f}%  "
+                f"{c.sharpe_ratio:>8.2f}  "
+                f"{c.max_drawdown_pct:>7.2f}%  "
+                f"{c.total_trades:>7d}  "
+                f"{c.win_rate_pct:>7.1f}%  "
+                f"{pf_str:>8s}"
+            )
+        lines.append(sep)
+
+        return "\n".join(lines)
+
+
+def copy_config_with_strength(base: OscillationConfig, strength: float) -> OscillationConfig:
+    """Create a copy of OscillationConfig with a different oscillation_strength."""
+    from dataclasses import replace
+    return replace(base, oscillation_strength=round(strength, 4))
